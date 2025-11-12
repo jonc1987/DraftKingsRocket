@@ -1,15 +1,589 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Orbit Edge Rocket</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Poppins:wght@400;500&display=swap');
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title></title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
+      :root {
+        --sky-shift: 210;
+        --rocket-lift: 0px;
+      }
 
-<body>
-  <script src="script.js"></script>
-</body>
+      * {
+        box-sizing: border-box;
+      }
 
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 30% 20%, #02050f, #010207 55%, #000000);
+        font-family: 'Poppins', 'Orbitron', system-ui, sans-serif;
+        color: #f4fbff;
+        padding: clamp(16px, 3vw, 32px);
+      }
+
+      .game-shell {
+        width: min(960px, 100%);
+        background: rgba(4, 8, 20, 0.9);
+        border-radius: 28px;
+        border: 1px solid rgba(0, 255, 196, 0.25);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+        padding: clamp(20px, 4vw, 40px);
+        backdrop-filter: blur(10px);
+      }
+
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0;
+        letter-spacing: 0.25em;
+        font-size: clamp(22px, 3vw, 32px);
+        text-transform: uppercase;
+        font-weight: 600;
+        color: #33ffe0;
+      }
+
+      .balance {
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(18px, 2.8vw, 24px);
+        text-transform: uppercase;
+      }
+
+      .subtitle {
+        width: 100%;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.65);
+        letter-spacing: 0.25em;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+        gap: clamp(18px, 3vw, 34px);
+      }
+
+      .stage {
+        position: relative;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 255, 196, 0.2);
+        background: linear-gradient(180deg, hsla(var(--sky-shift), 70%, 18%, 0.85), rgba(2, 5, 15, 0.95));
+        overflow: hidden;
+        padding: 24px;
+        height: clamp(320px, 38vw, 420px);
+        box-shadow: inset 0 20px 60px rgba(0, 0, 0, 0.55);
+      }
+
+      .stage::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.08), transparent 50%);
+        pointer-events: none;
+      }
+
+      .background-scroll {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(transparent, transparent 80px, rgba(255, 255, 255, 0.03) 82px);
+        animation: scroll 18s linear infinite;
+        opacity: 0.45;
+      }
+
+      @keyframes scroll {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-100px);
+        }
+      }
+
+      .multiplier-display {
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(32px, 5vw, 54px);
+        text-shadow: 0 0 20px rgba(0, 255, 213, 0.6);
+      }
+
+      .potential {
+        position: absolute;
+        top: 80px;
+        right: 32px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .rocket-track {
+        position: relative;
+        width: 140px;
+        height: 100%;
+        margin: 0 auto;
+      }
+
+      .rocket {
+        position: absolute;
+        bottom: 70px;
+        left: 50%;
+        width: 52px;
+        height: 120px;
+        transform: translate(-50%, var(--rocket-lift));
+        transition: transform 0.1s linear;
+      }
+
+      .rocket-body {
+        width: 100%;
+        height: 100%;
+        border-radius: 26px;
+        background: linear-gradient(180deg, #f5f9ff, #9ad2ff 70%, #ff8d66);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        position: relative;
+      }
+
+      .rocket-body::before {
+        content: '';
+        position: absolute;
+        inset: 12px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.35);
+      }
+
+      .fin {
+        position: absolute;
+        width: 12px;
+        height: 40px;
+        background: linear-gradient(180deg, #ff5f5f, #ffaf85);
+        bottom: 20px;
+      }
+
+      .fin.left {
+        left: -12px;
+        border-bottom-left-radius: 12px;
+      }
+
+      .fin.right {
+        right: -12px;
+        border-bottom-right-radius: 12px;
+      }
+
+      .flame {
+        position: absolute;
+        bottom: -24px;
+        left: 50%;
+        width: 16px;
+        height: 32px;
+        transform: translateX(-50%);
+        background: radial-gradient(circle at 50% 10%, #fff, #ffce4a 55%, rgba(255, 80, 0, 0.8));
+        filter: blur(0.5px);
+        border-radius: 50% 50% 60% 60%;
+        animation: flame 0.2s linear infinite;
+      }
+
+      @keyframes flame {
+        from {
+          transform: translateX(-50%) scaleY(1);
+        }
+        to {
+          transform: translateX(-50%) scaleY(0.7);
+        }
+      }
+
+      .launch-pad {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 60px;
+      }
+
+      .pad-base {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 28px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.7));
+        border-radius: 18px 18px 4px 4px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .pad-line {
+        position: absolute;
+        bottom: 22px;
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(0, 255, 196, 0.4), rgba(255, 255, 255, 0));
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 24px;
+        border-radius: 22px;
+        border: 1px solid rgba(0, 255, 196, 0.25);
+        background: rgba(2, 8, 18, 0.8);
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.35);
+      }
+
+      label {
+        font-size: 14px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      input[type='number'] {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(0, 255, 196, 0.4);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: #fff;
+        font-size: 18px;
+        font-family: 'Orbitron', sans-serif;
+      }
+
+      input[type='number']:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 255, 196, 0.4);
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        flex: 1;
+        border: none;
+        padding: 14px;
+        border-radius: 16px;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-family: 'Orbitron', sans-serif;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .launch {
+        background: linear-gradient(135deg, #00ffc6, #00c1ff);
+        color: #02121e;
+        box-shadow: 0 10px 30px rgba(0, 255, 196, 0.4);
+      }
+
+      .cashout {
+        background: linear-gradient(135deg, #ffb347, #ff5f6d);
+        color: #1a0505;
+        box-shadow: 0 10px 30px rgba(255, 101, 109, 0.4);
+      }
+
+      .risk-note {
+        min-height: 20px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+      }
+
+      .status {
+        min-height: 24px;
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .stage.shake {
+        animation: shake 0.35s linear;
+      }
+
+      @keyframes shake {
+        0% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        50% {
+          transform: translateX(6px);
+        }
+        75% {
+          transform: translateX(-4px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .multiplier-display,
+        .potential {
+          right: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-shell">
+      <header>
+        <div class="balance">Balance: $<span id="balance">1,000.00</span></div>
+        <h1>Orbit Edge</h1>
+        <p class="subtitle">Keep it low. Cash out high.</p>
+      </header>
+      <div class="layout">
+        <section class="stage" id="stage">
+          <div class="background-scroll"></div>
+          <div class="multiplier-display" id="multiplier">1.00x</div>
+          <div class="potential" id="potential">Potential: $0.00</div>
+          <div class="rocket-track">
+            <div class="rocket" id="rocket">
+              <div class="rocket-body"></div>
+              <div class="fin left"></div>
+              <div class="fin right"></div>
+              <div class="flame"></div>
+            </div>
+          </div>
+          <div class="launch-pad">
+            <div class="pad-line"></div>
+            <div class="pad-base"></div>
+          </div>
+        </section>
+        <section class="controls">
+          <div>
+            <label for="bet">Bet Amount</label>
+            <input type="number" id="bet" min="1" step="1" value="25" />
+          </div>
+          <div class="actions">
+            <button class="launch" id="launchBtn">Launch</button>
+            <button class="cashout" id="cashOutBtn" disabled>Cash Out</button>
+          </div>
+          <div class="risk-note" id="riskNote"></div>
+          <div class="status" id="status">Enter a bet to play.</div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      // ---------- Configurable settings ----------
+      const settings = {
+        startingBalance: 1000,
+        tickInterval: 60, // ms between multiplier updates
+        minMultiplier: 1,
+        maxMultiplier: 100,
+        liftRange: 55, // px of rocket travel
+      };
+
+      // ---------- State ----------
+      let balance = settings.startingBalance;
+      let currentBet = 0;
+      let multiplier = settings.minMultiplier;
+      let explosionPoint = 0;
+      let gameInterval = null;
+      let ticks = 0;
+      let inFlight = false;
+      let cashedOut = false;
+
+      // ---------- Elements ----------
+      const balanceEl = document.getElementById('balance');
+      const betInput = document.getElementById('bet');
+      const multiplierEl = document.getElementById('multiplier');
+      const potentialEl = document.getElementById('potential');
+      const launchBtn = document.getElementById('launchBtn');
+      const cashBtn = document.getElementById('cashOutBtn');
+      const statusEl = document.getElementById('status');
+      const stage = document.getElementById('stage');
+      const riskNote = document.getElementById('riskNote');
+
+      updateBalance();
+      updateRiskCopy();
+
+      launchBtn.addEventListener('click', launchRocket);
+      cashBtn.addEventListener('click', cashOut);
+      betInput.addEventListener('input', updateRiskCopy);
+
+      function updateBalance() {
+        balanceEl.textContent = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function updateRiskCopy() {
+        const bet = Number(betInput.value) || 0;
+        if (bet >= 50) {
+          riskNote.textContent = 'Higher stakes, higher risk – multipliers collapse early.';
+        } else if (bet >= 10) {
+          riskNote.textContent = 'Moderate stake: expect lower ceilings. Time your exit!';
+        } else if (bet > 0) {
+          riskNote.textContent = 'Light stake: fairer odds, but highs are still rare.';
+        } else {
+          riskNote.textContent = '';
+        }
+      }
+
+      function launchRocket() {
+        if (inFlight) return;
+        const bet = Math.floor(Number(betInput.value));
+        if (!bet || bet <= 0) {
+          setStatus('Enter a valid bet.');
+          return;
+        }
+        if (bet > balance) {
+          setStatus('Insufficient balance.');
+          return;
+        }
+
+        currentBet = bet;
+        balance -= currentBet;
+        updateBalance();
+        multiplier = settings.minMultiplier;
+        ticks = 0;
+        cashedOut = false;
+        explosionPoint = getExplosionMultiplier(currentBet);
+        inFlight = true;
+        stage.classList.remove('shake');
+        launchBtn.disabled = true;
+        cashBtn.disabled = false;
+        betInput.disabled = true;
+        setStatus('Ascending...');
+        updateDisplays();
+
+        gameInterval = setInterval(updateFlight, settings.tickInterval);
+      }
+
+      function updateFlight() {
+        ticks += 1;
+        const accel = Math.min(0.008 + ticks / 1200, 0.18);
+        multiplier += multiplier * accel;
+        updateDisplays();
+        updateRocketLift();
+        updateBackgroundHue();
+
+        if (multiplier >= explosionPoint) {
+          explodeRocket();
+        }
+      }
+
+      function updateDisplays() {
+        const rounded = multiplier.toFixed(2);
+        multiplierEl.textContent = `${rounded}x`;
+        const potential = inFlight ? currentBet * multiplier : 0;
+        potentialEl.textContent = `Potential: $${potential.toFixed(2)}`;
+      }
+
+      function updateRocketLift() {
+        const liftFraction = Math.min((multiplier - 1) / 12, 1);
+        const lift = -liftFraction * settings.liftRange;
+        document.documentElement.style.setProperty('--rocket-lift', `${lift}px`);
+      }
+
+      function updateBackgroundHue() {
+        const hue = 210 - Math.min(multiplier * 3, 90);
+        document.documentElement.style.setProperty('--sky-shift', hue);
+      }
+
+      function cashOut() {
+        if (!inFlight || cashedOut) return;
+        cashedOut = true;
+        const winnings = currentBet * multiplier;
+        balance += winnings;
+        updateBalance();
+        setStatus(`You cashed out at ${multiplier.toFixed(2)}x for $${winnings.toFixed(2)}!`);
+        endFlight();
+        stage.classList.remove('shake');
+        scheduleReset();
+      }
+
+      function explodeRocket() {
+        if (!inFlight) return;
+        setStatus(`Boom! Rocket exploded at ${explosionPoint.toFixed(2)}x.`);
+        stage.classList.add('shake');
+        endFlight();
+        scheduleReset();
+      }
+
+      function endFlight() {
+        clearInterval(gameInterval);
+        gameInterval = null;
+        inFlight = false;
+        cashBtn.disabled = true;
+      }
+
+      function scheduleReset() {
+        setTimeout(resetGame, 1800);
+      }
+
+      function resetGame() {
+        multiplier = settings.minMultiplier;
+        document.documentElement.style.setProperty('--rocket-lift', '0px');
+        document.documentElement.style.setProperty('--sky-shift', '210');
+        stage.classList.remove('shake');
+        launchBtn.disabled = false;
+        betInput.disabled = false;
+        cashBtn.disabled = true;
+        potentialEl.textContent = 'Potential: $0.00';
+        multiplierEl.textContent = '1.00x';
+        updateRiskCopy();
+        if (!cashedOut && currentBet > 0) {
+          setStatus('Round over. Ready when you are.');
+        }
+        currentBet = 0;
+      }
+
+      function getExplosionMultiplier(bet) {
+        const roll = Math.random();
+        if (bet < 10) {
+          if (roll < 0.65) return randRange(1, 15);
+          if (roll < 0.9) return randRange(15, 35);
+          if (roll < 0.98) return randRange(35, 60);
+          return randRange(60, settings.maxMultiplier);
+        }
+        if (bet <= 50) {
+          if (roll < 0.75) return randRange(1, 18);
+          if (roll < 0.95) return randRange(18, 30);
+          return randRange(30, 80);
+        }
+        if (roll < 0.82) return randRange(1, 5);
+        if (roll < 0.97) return randRange(5, 12);
+        return randRange(12, 60);
+      }
+
+      function randRange(min, max) {
+        return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+      }
+
+      function setStatus(msg) {
+        statusEl.textContent = msg;
+      }
+    </script>
+  </body>
 </html>
