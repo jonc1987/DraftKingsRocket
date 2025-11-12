@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Neon Rocket Run</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rocket Surge</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap');
 
     :root {
+      --cosmos-hue: 210;
       --lift: 0px;
+      --rocket-rock: 0deg;
     }
 
     * {
@@ -21,667 +23,755 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 20% 20%, hsl(210, 90%, 25%), hsl(255, 92%, 8%));
+      background: radial-gradient(circle at 20% 20%, hsl(var(--cosmos-hue), 82%, 16%), hsl(calc(var(--cosmos-hue) + 40), 82%, 6%));
+      font-family: 'Orbitron', 'Poppins', system-ui, sans-serif;
       color: #f3f8ff;
-      font-family: 'Orbitron', 'Rajdhani', 'Segoe UI', sans-serif;
-      transition: background 0.6s ease;
-      padding: 24px;
+      overflow: hidden;
+      transition: background 0.5s ease;
+      padding: 32px;
     }
 
-    .game-wrapper {
-      width: min(540px, 94vw);
-      background: linear-gradient(160deg, rgba(6, 10, 32, 0.95) 0%, rgba(11, 18, 46, 0.88) 55%, rgba(6, 9, 24, 0.92) 100%);
-      border: 1px solid rgba(0, 255, 209, 0.16);
-      border-radius: 24px;
-      box-shadow: 0 25px 90px rgba(3, 6, 18, 0.85), inset 0 0 24px rgba(0, 233, 255, 0.08);
-      padding: 36px 32px;
+    .cosmos-film {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.08), transparent 55%),
+        radial-gradient(circle at 70% 60%, rgba(255, 0, 153, 0.15), transparent 60%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      opacity: 0.65;
+      animation: drift 18s linear infinite;
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-12px) scale(1.02);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    .game-shell {
+      width: min(900px, 96vw);
+      background: rgba(2, 7, 24, 0.8);
+      border-radius: 28px;
+      border: 1px solid rgba(0, 255, 213, 0.2);
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.75), inset 0 0 40px rgba(0, 255, 234, 0.08);
+      padding: clamp(20px, 4vw, 40px);
       position: relative;
       overflow: hidden;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(18px);
     }
 
-    .game-wrapper::after {
-      content: "";
+    .game-shell::after {
+      content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(0, 255, 209, 0.14), transparent 60%);
+      border-radius: inherit;
       pointer-events: none;
+      box-shadow: inset 0 0 60px rgba(0, 255, 213, 0.08);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
     }
 
     h1 {
-      font-size: clamp(28px, 5vw, 36px);
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      letter-spacing: 4px;
-      margin: 0 0 12px;
-      text-align: center;
-      color: #00ffd1;
-      text-shadow: 0 0 22px rgba(0, 255, 209, 0.6);
+      color: #00ffe5;
+      text-shadow: 0 0 18px rgba(0, 255, 229, 0.65);
     }
 
-    .subtitle {
+    .tagline {
       font-size: 14px;
-      text-align: center;
-      color: rgba(214, 235, 255, 0.72);
-      margin-bottom: 28px;
-      letter-spacing: 2px;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.62);
+      margin-top: 6px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr);
+      gap: clamp(20px, 3vw, 36px);
     }
 
     .stage {
       position: relative;
-      height: 280px;
-      border-radius: 18px;
-      border: 1px solid rgba(0, 255, 209, 0.18);
-      background: linear-gradient(180deg, rgba(10, 14, 34, 0.85) 0%, rgba(5, 8, 20, 0.92) 75%, rgba(2, 4, 12, 0.98) 100%);
+      height: clamp(320px, 38vw, 420px);
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(8, 12, 30, 0.9) 0%, rgba(1, 3, 10, 0.9) 100%);
       overflow: hidden;
-      box-shadow: inset 0 0 24px rgba(0, 255, 209, 0.08);
+      border: 1px solid rgba(0, 255, 234, 0.2);
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
     }
 
-    .starfield {
+    .stage::before,
+    .stage::after {
+      content: '';
       position: absolute;
       inset: 0;
-      background-image: radial-gradient(1px 1px at 20% 20%, rgba(255, 255, 255, 0.5), transparent),
-        radial-gradient(1px 1px at 80% 50%, rgba(255, 255, 255, 0.4), transparent),
-        radial-gradient(2px 2px at 40% 80%, rgba(255, 255, 255, 0.35), transparent);
-      background-size: 160px 220px;
-      opacity: 0.65;
-      filter: blur(0.3px);
-      animation: twinkle 8s linear infinite;
+      background: repeating-linear-gradient(transparent, transparent 40px, rgba(255, 255, 255, 0.02) 42px),
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08), transparent 45%);
+      opacity: 0.4;
       pointer-events: none;
+      animation: parallax 40s linear infinite;
     }
 
-    @keyframes twinkle {
-      0%, 100% {
+    .stage::after {
+      animation-duration: 25s;
+      mix-blend-mode: screen;
+      opacity: 0.8;
+    }
+
+    @keyframes parallax {
+      from {
         transform: translateY(0);
-        opacity: 0.75;
+      }
+      to {
+        transform: translateY(-200px);
+      }
+    }
+
+    .stage-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .smoke-plume {
+      position: absolute;
+      bottom: 45px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 120px;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 70%);
+      filter: blur(12px);
+      opacity: 0.8;
+      animation: plume 4s ease-in-out infinite;
+    }
+
+    @keyframes plume {
+      0%, 100% {
+        transform: translate(-50%, 0) scale(1);
       }
       50% {
-        transform: translateY(-12px);
-        opacity: 0.55;
+        transform: translate(-50%, 6px) scale(1.1);
       }
+    }
+
+    .launch-pad {
+      position: absolute;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 34px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(20, 32, 60, 0.92), rgba(3, 6, 16, 0.92));
+      border: 1px solid rgba(0, 255, 234, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65);
     }
 
     .rocket {
       position: absolute;
       bottom: 62px;
       left: 50%;
-      width: 72px;
-      height: 140px;
-      transform: translate(-50%, var(--lift, 0px));
-      transition: transform 0.18s linear, filter 0.24s ease, opacity 0.24s ease;
-      z-index: 2;
+      width: 92px;
+      height: 180px;
+      transform: translate(-50%, var(--lift)) rotate(var(--rocket-rock));
+      transition: transform 0.22s ease, filter 0.2s ease;
+      z-index: 3;
+      animation: idle-bob 3s ease-in-out infinite;
     }
 
     .rocket-body {
-      position: relative;
-      height: 100%;
       width: 100%;
-      border-radius: 36px 36px 20px 20px;
-      background: linear-gradient(160deg, #f4f5ff 0%, #cfd4f9 40%, #9ea9ff 70%, #3e4bff 100%);
-      border: 2px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 20px 40px rgba(70, 107, 255, 0.3);
+      height: 100%;
+      background: linear-gradient(160deg, #f4f6ff 0%, #d3d9ff 40%, #93a1ff 70%, #3a46ff 100%);
+      border-radius: 50px 50px 28px 28px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      position: relative;
+      box-shadow: 0 25px 60px rgba(60, 84, 255, 0.45);
       overflow: hidden;
     }
 
     .rocket-body::before {
-      content: "";
+      content: '';
       position: absolute;
-      inset: 12px 12px auto 12px;
-      height: 52px;
-      border-radius: 24px;
-      background: radial-gradient(circle at 50% 30%, rgba(25, 31, 78, 0.95), rgba(3, 7, 32, 0.9));
-      box-shadow: 0 0 14px rgba(0, 255, 209, 0.45) inset;
+      inset: 16px 20px auto 20px;
+      height: 70px;
+      border-radius: 30px;
+      background: radial-gradient(circle at 50% 35%, rgba(19, 28, 66, 0.95), rgba(4, 7, 26, 0.85));
+      box-shadow: 0 0 20px rgba(0, 255, 234, 0.45) inset;
     }
 
     .rocket-body::after {
-      content: "";
+      content: '';
       position: absolute;
-      bottom: -24px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 34px;
+      inset: auto 18px 12px 18px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0));
+    }
+
+    .rocket-fin {
+      position: absolute;
+      bottom: 34px;
+      width: 50px;
       height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(180deg, rgba(255, 156, 0, 0.92) 0%, rgba(255, 42, 42, 0.88) 65%, rgba(255, 0, 0, 0) 100%);
-      filter: blur(0.6px);
-      animation: flame 0.18s ease-in-out infinite alternate;
+      background: linear-gradient(140deg, rgba(63, 91, 255, 0.9), rgba(13, 25, 92, 0.95));
+      border-radius: 12px;
+      filter: drop-shadow(0 10px 14px rgba(34, 79, 255, 0.45));
+    }
+
+    .rocket-fin.left {
+      left: -12px;
+      transform: rotate(-18deg);
+    }
+
+    .rocket-fin.right {
+      right: -12px;
+      transform: rotate(18deg);
+    }
+
+    .flame {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      width: 40px;
+      height: 60px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.9), rgba(255, 189, 46, 0.92) 45%, rgba(255, 64, 64, 0.7) 75%, transparent 100%);
+      filter: blur(0.4px);
+      animation: flame 0.22s ease-in-out infinite alternate;
+    }
+
+    @keyframes idle-bob {
+      0%, 100% {
+        transform: translate(-50%, var(--lift)) rotate(-1deg);
+      }
+      50% {
+        transform: translate(-50%, calc(var(--lift) + 4px)) rotate(1deg);
+      }
     }
 
     @keyframes flame {
       0% {
         transform: translateX(-50%) scaleY(1);
-        opacity: 0.92;
+        opacity: 0.9;
       }
       100% {
-        transform: translateX(-50%) scaleY(1.35);
+        transform: translateX(-50%) scaleY(1.4);
         opacity: 0.5;
       }
     }
 
-    .rocket.fin-left,
-    .rocket.fin-right {
+    .trail {
       position: absolute;
-      bottom: 32px;
-      width: 36px;
-      height: 32px;
-      background: linear-gradient(140deg, rgba(63, 91, 255, 0.8), rgba(13, 25, 92, 0.9));
-      border-radius: 10px;
-      filter: drop-shadow(0 8px 14px rgba(34, 79, 255, 0.42));
-    }
-
-    .rocket.fin-left {
-      left: calc(50% - 44px);
-      transform: rotate(-15deg);
-    }
-
-    .rocket.fin-right {
-      left: calc(50% + 8px);
-      transform: rotate(15deg);
-    }
-
-    .launch-pad {
-      position: absolute;
-      bottom: 18px;
+      bottom: 62px;
       left: 50%;
       transform: translateX(-50%);
-      width: 160px;
-      height: 28px;
-      background: linear-gradient(180deg, rgba(18, 22, 48, 0.85), rgba(6, 9, 24, 0.92));
-      border: 1px solid rgba(0, 255, 209, 0.12);
-      border-radius: 16px;
-      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+      width: 8px;
+      height: 200%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 188, 54, 0.65), rgba(255, 32, 32, 0));
+      filter: blur(2px);
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
 
-    .multiplier-display {
-      margin: 20px auto 12px;
-      font-size: clamp(48px, 8vw, 64px);
+    .stage.launching .trail {
+      opacity: 0.5;
+    }
+
+    .multiplier-readout {
+      margin-top: 20px;
+      font-size: clamp(54px, 6vw, 72px);
       font-weight: 700;
       color: #ffffff;
-      text-shadow: 0 0 16px rgba(0, 255, 209, 0.65);
-      display: flex;
-      justify-content: center;
-      align-items: baseline;
-      gap: 6px;
+      text-shadow: 0 0 25px rgba(0, 255, 234, 0.7);
+      letter-spacing: 0.08em;
+      text-align: center;
     }
 
-    .multiplier-display span {
-      font-size: 22px;
-      color: rgba(211, 248, 255, 0.78);
-      letter-spacing: 2px;
+    .potential-winnings {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    .potential-winnings span {
+      color: #00ffde;
+      font-weight: 600;
     }
 
     .controls {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      align-items: end;
-      margin-top: 12px;
+      background: rgba(1, 4, 15, 0.75);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(0, 255, 234, 0.15);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     label {
-      display: block;
-      text-align: left;
-      font-size: 12px;
-      letter-spacing: 1.4px;
-      color: rgba(197, 227, 255, 0.68);
-      margin-bottom: 6px;
+      font-size: 13px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.65);
     }
 
-    input[type="number"] {
-      width: 100%;
-      background: rgba(4, 8, 22, 0.9);
-      border: 1px solid rgba(0, 255, 209, 0.22);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 16px;
-      color: #f6fdff;
-      font-family: 'Rajdhani', sans-serif;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    input[type="number"]:focus {
-      border-color: rgba(0, 255, 209, 0.5);
-      box-shadow: 0 0 0 3px rgba(0, 255, 209, 0.18);
+    input[type='number'] {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0, 255, 234, 0.35);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 20px;
+      font-family: inherit;
+      color: #ffffff;
       outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type='number']:focus {
+      border-color: #00ffde;
+      box-shadow: 0 0 18px rgba(0, 255, 222, 0.25);
+    }
+
+    .hint {
+      min-height: 28px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .hint.warning {
+      color: #ff9d5c;
     }
 
     .buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      display: flex;
       gap: 12px;
-      margin-top: 14px;
     }
 
     button {
-      padding: 14px 18px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
+      flex: 1;
       border: none;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      font-family: inherit;
+      text-transform: uppercase;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-      font-family: 'Orbitron', sans-serif;
     }
 
-    .btn-launch {
-      background: linear-gradient(120deg, rgba(0, 255, 209, 0.95), rgba(0, 170, 255, 0.9));
-      color: #03111d;
-      box-shadow: 0 18px 38px rgba(0, 207, 255, 0.32);
+    .launch-btn {
+      background: linear-gradient(120deg, #16ffe3, #00a8ff);
+      color: #08141f;
+      box-shadow: 0 15px 30px rgba(0, 255, 230, 0.35);
     }
 
-    .btn-launch:disabled {
-      background: rgba(37, 64, 86, 0.45);
-      color: rgba(165, 196, 212, 0.6);
+    .launch-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
       box-shadow: none;
+    }
+
+    .cashout-btn {
+      background: linear-gradient(120deg, #ffb347, #ff005d);
+      color: #070312;
+      box-shadow: 0 15px 30px rgba(255, 83, 126, 0.35);
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
-    .btn-cashout {
-      background: linear-gradient(120deg, rgba(255, 230, 0, 0.92), rgba(255, 145, 0, 0.9));
-      color: #2e1300;
-      box-shadow: 0 18px 32px rgba(255, 170, 0, 0.28);
-    }
-
-    .btn-cashout:disabled {
-      background: rgba(82, 61, 18, 0.45);
-      color: rgba(255, 214, 150, 0.54);
-      box-shadow: none;
-      cursor: not-allowed;
+    .cashout-btn.active {
+      opacity: 1;
+      cursor: pointer;
     }
 
     button:not(:disabled):active {
-      transform: translateY(1px) scale(0.995);
-    }
-
-    button:not(:disabled):hover {
-      box-shadow: 0 20px 40px rgba(0, 255, 209, 0.3);
+      transform: translateY(2px);
     }
 
     .status {
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 14px;
-      background: rgba(5, 12, 24, 0.72);
-      border: 1px solid rgba(0, 255, 209, 0.12);
-      min-height: 52px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      justify-content: center;
-    }
-
-    .status .message {
+      text-align: center;
       font-size: 16px;
-      letter-spacing: 1.2px;
-    }
-
-    .status .message.win {
-      color: #56ffc5;
-      text-shadow: 0 0 16px rgba(86, 255, 197, 0.5);
-    }
-
-    .status .message.lose {
-      color: #ff6b88;
-      text-shadow: 0 0 16px rgba(255, 107, 136, 0.5);
-    }
-
-    .status .detail {
-      font-size: 13px;
-      color: rgba(189, 216, 255, 0.6);
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-    }
-
-    .leaderboard {
+      letter-spacing: 0.08em;
       margin-top: 18px;
-      padding: 14px;
-      border-radius: 12px;
-      background: rgba(0, 14, 34, 0.6);
-      border: 1px solid rgba(0, 255, 209, 0.18);
-      font-size: 13px;
-      letter-spacing: 1.6px;
-      color: rgba(211, 240, 255, 0.75);
-      text-transform: uppercase;
+      min-height: 26px;
     }
 
-    .rocket.launched .rocket-body::after {
-      animation-duration: 0.12s;
+    .stage.launching {
+      animation: stage-pulse 1.5s ease-in-out infinite;
     }
 
-    .rocket.cashed .rocket-body {
-      box-shadow: 0 0 38px rgba(0, 255, 209, 0.65);
+    .stage.exploding {
+      animation: shake 0.4s ease-in-out;
     }
 
-    .rocket.exploding {
-      animation: explode 0.6s ease-out forwards;
-      filter: brightness(1.25) saturate(1.3);
-    }
-
-    @keyframes explode {
-      0% {
-        transform: translate(-50%, var(--lift)) scale(1);
-        opacity: 1;
+    @keyframes stage-pulse {
+      0%, 100% {
+        box-shadow: inset 0 0 40px rgba(0, 255, 234, 0.2);
       }
-      40% {
-        transform: translate(-50%, var(--lift)) scale(1.12) rotate(8deg);
-        opacity: 1;
+      50% {
+        box-shadow: inset 0 0 70px rgba(255, 109, 0, 0.35);
       }
-      100% {
-        transform: translate(-50%, var(--lift)) scale(1.5) rotate(-12deg);
-        opacity: 0;
-      }
-    }
-
-    .shake {
-      animation: shake 0.35s linear infinite;
     }
 
     @keyframes shake {
-      0%, 100% {
-        transform: translate(-50%, calc(var(--lift) + 0px));
+      0% {
+        transform: translate(0, 0);
       }
       25% {
-        transform: translate(-50%, calc(var(--lift) + 4px));
+        transform: translate(-8px, 6px);
+      }
+      50% {
+        transform: translate(8px, -6px);
       }
       75% {
-        transform: translate(-50%, calc(var(--lift) - 4px));
+        transform: translate(-6px, -4px);
+      }
+      100% {
+        transform: translate(0, 0);
       }
     }
 
-    @media (max-width: 520px) {
-      .game-wrapper {
-        padding: 32px 22px;
-      }
-      .controls {
-        grid-template-columns: 1fr;
-      }
-      .buttons {
+    .log {
+      margin-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+      max-height: 140px;
+      overflow: auto;
+    }
+
+    .log-entry.win {
+      color: #16ffe3;
+    }
+
+    .log-entry.loss {
+      color: #ff6f6f;
+    }
+
+    @media (max-width: 850px) {
+      .layout {
         grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <div class="game-wrapper">
-    <h1>Neon Rocket Run</h1>
-    <div class="subtitle">Launch, ride the multiplier, and cash out before the boom.</div>
-    <div class="stage">
-      <div class="starfield"></div>
-      <div class="rocket fin-left"></div>
-      <div class="rocket fin-right"></div>
-      <div id="rocket" class="rocket">
-        <div class="rocket-body"></div>
+  <div class="cosmos-film"></div>
+  <main class="game-shell">
+    <header>
+      <h1>Rocket Surge</h1>
+      <div class="tagline">Ride the risk • Cash before the crash</div>
+    </header>
+    <div class="layout">
+      <div>
+        <div class="stage" id="stage">
+          <div class="stage-content">
+            <div class="smoke-plume"></div>
+            <div class="trail" id="trail"></div>
+            <div class="rocket" id="rocket">
+              <div class="rocket-body"></div>
+              <div class="rocket-fin left"></div>
+              <div class="rocket-fin right"></div>
+              <div class="flame"></div>
+            </div>
+            <div class="launch-pad"></div>
+          </div>
+        </div>
+        <div class="multiplier-readout" id="multiplier">1.00x</div>
+        <div class="potential-winnings">Potential: <span id="potential">$0.00</span></div>
       </div>
-      <div class="launch-pad"></div>
-    </div>
-
-    <div class="multiplier-display" id="multiplierDisplay">1.00<span>x</span></div>
-
-    <div class="controls">
-      <div class="control">
-        <label for="betAmount">Bet Amount ($)</label>
-        <input type="number" id="betAmount" min="1" step="0.5" value="10" />
+      <div class="controls">
+        <div class="input-group">
+          <label for="bet">Bet Amount ($)</label>
+          <input id="bet" type="number" min="1" step="1" value="10" />
+          <div class="hint" id="hint">Standard odds in play.</div>
+        </div>
+        <div class="buttons">
+          <button class="launch-btn" id="launch">Launch</button>
+          <button class="cashout-btn" id="cashout" disabled>Cash Out</button>
+        </div>
+        <div class="status" id="status">Place your bet and hit launch.</div>
+        <div class="log" id="log"></div>
       </div>
-      <div class="control">
-        <label for="autoCash">Auto Cash Out (optional)</label>
-        <input type="number" id="autoCash" min="1" step="0.01" placeholder="e.g. 2.5" />
-      </div>
     </div>
-
-    <div class="buttons">
-      <button id="launchBtn" class="btn-launch">Launch</button>
-      <button id="cashOutBtn" class="btn-cashout" disabled>Cash Out</button>
-    </div>
-
-    <div class="status">
-      <div id="statusMessage" class="message">Place your bet and hit Launch.</div>
-      <div id="statusDetail" class="detail">Multiplier explodes somewhere between 1.00x and 100.00x.</div>
-    </div>
-
-    <div class="leaderboard" id="leaderboard">Highest Multiplier Reached: 1.00x</div>
-  </div>
+  </main>
 
   <script>
-    (function () {
-      const multiplierEl = document.getElementById('multiplierDisplay');
-      const rocketEl = document.getElementById('rocket');
-      const launchBtn = document.getElementById('launchBtn');
-      const cashOutBtn = document.getElementById('cashOutBtn');
-      const betInput = document.getElementById('betAmount');
-      const autoCashInput = document.getElementById('autoCash');
-      const statusMessage = document.getElementById('statusMessage');
-      const statusDetail = document.getElementById('statusDetail');
-      const leaderboard = document.getElementById('leaderboard');
+    // === Adjustable configuration ===
+    const RISK_CONFIG = [
+      { limit: 10, min: 1.0, max: 100, curve: 1.1 },
+      { limit: 50, min: 1.0, max: 30, curve: 1.4 },
+      { limit: Infinity, min: 1.0, max: 10, curve: 1.8, spikeChance: 0.18, spikeMax: 35 }
+    ];
+    const ROUND_RESET_DELAY = 2000; // ms after explosion/cash-out
+    const UPDATE_INTERVAL = 60; // ms for multiplier updates
 
-      let multiplier = 1;
-      let growthRate = 0.015;
-      let intervalId = null;
-      let explosionPoint = 2;
-      let betValue = 0;
-      let state = 'idle';
-      let highestMultiplier = 1;
-      let autoCashTarget = null;
-      let audioCtx = null;
+    // === Cached DOM ===
+    const betInput = document.getElementById('bet');
+    const hint = document.getElementById('hint');
+    const multiplierEl = document.getElementById('multiplier');
+    const potentialEl = document.getElementById('potential');
+    const launchBtn = document.getElementById('launch');
+    const cashoutBtn = document.getElementById('cashout');
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+    const stageEl = document.getElementById('stage');
+    const rocketEl = document.getElementById('rocket');
+    const trailEl = document.getElementById('trail');
 
-      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    // === Audio helpers ===
+    let audioCtx;
+    let humNode;
 
-      function playTone(frequency, duration, type = 'sine') {
-        try {
-          if (!audioCtx) {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (AudioContextClass) {
-              audioCtx = new AudioContextClass();
-            } else {
-              return;
-            }
-          }
-          if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-          }
-          const now = audioCtx.currentTime;
-          const oscillator = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          oscillator.type = type;
-          oscillator.frequency.setValueAtTime(frequency, now);
-          gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.exponentialRampToValueAtTime(0.28, now + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-          oscillator.connect(gain);
-          gain.connect(audioCtx.destination);
-          oscillator.start(now);
-          oscillator.stop(now + duration + 0.05);
-        } catch (err) {
-          console.warn('Audio unavailable', err);
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        startHum();
+      }
+    }
+
+    function startHum() {
+      humNode = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      gain.gain.value = 0.015;
+      humNode.type = 'sine';
+      humNode.frequency.value = 60;
+      humNode.connect(gain).connect(audioCtx.destination);
+      humNode.start();
+    }
+
+    function playSound({ type = 'sine', frequency = 440, duration = 0.2, volume = 0.25 }) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = frequency;
+      gain.gain.value = volume;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // === State ===
+    let multiplier = 1.0;
+    let running = false;
+    let exploded = false;
+    let explosionPoint = 0;
+    let betAmount = 0;
+    let intervalId = null;
+    let roundStart = null;
+
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+
+    // === Utility functions ===
+    function weightedRandom(min, max, curve) {
+      const rand = Math.pow(Math.random(), curve);
+      return min + (max - min) * rand;
+    }
+
+    function resolveExplosionPoint(bet) {
+      const tier = RISK_CONFIG.find((t) => bet < t.limit);
+      let point = weightedRandom(tier.min, tier.max, tier.curve);
+      if (tier.spikeChance && Math.random() < tier.spikeChance) {
+        point = Math.max(point, (tier.max + 5) + Math.random() * (tier.spikeMax - tier.max));
+      }
+      return Math.min(point, 100);
+    }
+
+    function updateHint(value) {
+      if (value >= 50) {
+        hint.textContent = 'Higher stakes, higher risk… volatility engaged.';
+        hint.classList.add('warning');
+      } else if (value >= 10) {
+        hint.textContent = 'Increased stakes: expect quicker detonations.';
+        hint.classList.add('warning');
+      } else {
+        hint.textContent = 'Standard odds in play.';
+        hint.classList.remove('warning');
+      }
+    }
+
+    function setMultiplierDisplay(value) {
+      multiplierEl.textContent = value.toFixed(2) + 'x';
+      const hue = 210 - Math.min(160, value * 8);
+      document.body.style.setProperty('--cosmos-hue', hue);
+    }
+
+    function updatePotential() {
+      const potential = betAmount * multiplier;
+      potentialEl.textContent = formatter.format(isFinite(potential) ? potential : 0);
+    }
+
+    function resetRoundState() {
+      running = false;
+      exploded = false;
+      multiplier = 1.0;
+      betAmount = 0;
+      setMultiplierDisplay(multiplier);
+      potentialEl.textContent = formatter.format(0);
+      launchBtn.disabled = false;
+      cashoutBtn.disabled = true;
+      cashoutBtn.classList.remove('active');
+      stageEl.classList.remove('launching', 'exploding');
+      statusEl.textContent = 'Ready for the next launch.';
+      document.body.style.setProperty('--lift', '0px');
+      rocketEl.style.filter = 'drop-shadow(0 0 0 rgba(0,0,0,0))';
+      trailEl.style.opacity = 0;
+    }
+
+    function logResult(text, type) {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `${new Date().toLocaleTimeString()} — ${text}`;
+      logEl.prepend(entry);
+      while (logEl.children.length > 8) {
+        logEl.removeChild(logEl.lastChild);
+      }
+    }
+
+    function stopInterval() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    function launchRocket() {
+      if (running) return;
+      ensureAudio();
+      betAmount = Number(betInput.value);
+      if (!betAmount || betAmount <= 0) {
+        statusEl.textContent = 'Enter a valid stake.';
+        return;
+      }
+      updateHint(betAmount);
+      running = true;
+      exploded = false;
+      multiplier = 1.0;
+      explosionPoint = resolveExplosionPoint(betAmount);
+      roundStart = Date.now();
+      launchBtn.disabled = true;
+      betInput.disabled = true;
+      cashoutBtn.disabled = false;
+      cashoutBtn.classList.add('active');
+      statusEl.textContent = 'Ascending... cash out before it blows!';
+      stageEl.classList.add('launching');
+      trailEl.style.opacity = 0.6;
+      playSound({ frequency: 180, duration: 0.5, volume: 0.2 });
+      startMultiplierLoop();
+    }
+
+    function startMultiplierLoop() {
+      stopInterval();
+      intervalId = setInterval(() => {
+        const elapsed = (Date.now() - roundStart) / 1000;
+        const curve = 1 + elapsed * 0.25 + Math.pow(elapsed, 1.65) * 0.4;
+        const tensionZone = explosionPoint * 0.8;
+        multiplier = Math.min(curve, explosionPoint + 0.02);
+        if (multiplier > tensionZone) {
+          multiplier -= Math.sin(elapsed * 3) * 0.04;
         }
-      }
-
-      function formatCurrency(amount) {
-        return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }
-
-      function setMultiplierDisplay(value) {
-        multiplierEl.textContent = value.toFixed(2) + 'x';
-      }
-
-      function updateRocketPosition(currentMultiplier) {
-        const lift = clamp((currentMultiplier - 1) * 34, 0, 220);
-        rocketEl.style.setProperty('--lift', `${-lift}px`);
-      }
-
-      function updateBackground(currentMultiplier) {
-        const hue = Math.round(200 + clamp(currentMultiplier, 0, 20) * 7);
-        const hue2 = (hue + 60) % 360;
-        document.body.style.background = `radial-gradient(circle at 20% 20%, hsl(${hue}, 90%, 24%), hsl(${hue2}, 92%, 9%))`;
-      }
-
-      function updateDetail(text) {
-        statusDetail.textContent = text;
-      }
-
-      function resetStatusClasses() {
-        statusMessage.classList.remove('win', 'lose');
-      }
-
-      function prepareForLaunch() {
-        if (state !== 'idle') {
-          return;
-        }
-        const bet = parseFloat(betInput.value);
-        if (Number.isNaN(bet) || bet <= 0) {
-          statusMessage.textContent = 'Enter a valid bet amount to play.';
-          resetStatusClasses();
-          return;
-        }
-
-        betValue = bet;
-        const autoValue = parseFloat(autoCashInput.value);
-        autoCashTarget = Number.isFinite(autoValue) && autoValue >= 1 ? autoValue : null;
-        multiplier = 1;
-        growthRate = 0.015;
-        explosionPoint = parseFloat((Math.random() * 99 + 1).toFixed(2));
-        state = 'running';
-
-        launchBtn.disabled = true;
-        cashOutBtn.disabled = false;
-        betInput.disabled = true;
-        autoCashInput.disabled = true;
-        rocketEl.classList.remove('exploding', 'cashed');
-        rocketEl.classList.add('launched');
-        resetStatusClasses();
-        statusMessage.textContent = 'Rocket climbing...';
-        updateDetail(`Mystery crash point armed. Cash out in time!`);
-        playTone(480, 0.25, 'triangle');
         setMultiplierDisplay(multiplier);
-        updateBackground(multiplier);
-        updateRocketPosition(multiplier);
-
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-        intervalId = setInterval(stepGame, 50);
-      }
-
-      function stepGame() {
-        multiplier += multiplier * growthRate;
-        growthRate = clamp(growthRate + 0.0012, 0.01, 0.08);
-
+        document.body.style.setProperty('--lift', `-${Math.min(260, multiplier * 18)}px`);
+        updatePotential();
         if (multiplier >= explosionPoint) {
-          multiplier = explosionPoint;
-          renderMultiplierState();
-          triggerExplosion();
-          return;
+          explodeRocket();
         }
+      }, UPDATE_INTERVAL);
+    }
 
-        renderMultiplierState();
-
-        if (autoCashTarget && multiplier >= autoCashTarget) {
-          triggerCashOut(true);
-        }
-      }
-
-      function renderMultiplierState() {
-        setMultiplierDisplay(multiplier);
-        updateRocketPosition(multiplier);
-        updateBackground(multiplier);
-      }
-
-      function triggerCashOut(isAuto = false) {
-        if (state !== 'running') {
-          return;
-        }
-        state = 'ended';
-        clearInterval(intervalId);
-        intervalId = null;
-        cashOutBtn.disabled = true;
-        rocketEl.classList.add('cashed');
-        rocketEl.classList.remove('launched');
-
-        const winnings = betValue * multiplier;
-        resetStatusClasses();
-        statusMessage.classList.add('win');
-        statusMessage.textContent = `You Won $${formatCurrency(winnings)}!`;
-        updateDetail(`${isAuto ? 'Auto ' : ''}Cash Out at ${multiplier.toFixed(2)}x`);
-        playTone(740, 0.35, 'sawtooth');
-
-        updateHighestMultiplier(multiplier);
-        scheduleReset();
-      }
-
-      function triggerExplosion() {
-        if (state !== 'running') {
-          return;
-        }
-        state = 'ended';
-        clearInterval(intervalId);
-        intervalId = null;
-        cashOutBtn.disabled = true;
-
-        rocketEl.classList.remove('launched');
-        rocketEl.classList.add('exploding');
-
-        resetStatusClasses();
-        statusMessage.classList.add('lose');
-        statusMessage.textContent = 'You Lost! The rocket exploded!';
-        updateDetail(`Crash multiplier: ${multiplier.toFixed(2)}x`);
-        playTone(160, 0.45, 'square');
-
-        updateHighestMultiplier(multiplier);
-        scheduleReset();
-      }
-
-      function updateHighestMultiplier(value) {
-        if (value > highestMultiplier) {
-          highestMultiplier = value;
-          leaderboard.textContent = `Highest Multiplier Reached: ${highestMultiplier.toFixed(2)}x`;
-        }
-      }
-
-      function scheduleReset() {
-        setTimeout(() => {
-          resetGame();
-        }, 2800);
-      }
-
-      function resetGame() {
-        clearInterval(intervalId);
-        intervalId = null;
-        state = 'idle';
-        multiplier = 1;
-        growthRate = 0.015;
-        setMultiplierDisplay(multiplier);
-        updateBackground(multiplier);
-        updateRocketPosition(multiplier);
-        launchBtn.disabled = false;
-        cashOutBtn.disabled = true;
+    function explodeRocket() {
+      if (exploded) return;
+      exploded = true;
+      running = false;
+      stopInterval();
+      stageEl.classList.remove('launching');
+      stageEl.classList.add('exploding');
+      document.body.style.setProperty('--rocket-rock', '8deg');
+      trailEl.style.opacity = 0;
+      statusEl.textContent = `Kaboom at ${multiplier.toFixed(2)}x! Bet lost.`;
+      playSound({ type: 'square', frequency: 70, duration: 0.5, volume: 0.35 });
+      logResult(`Lost ${formatter.format(betAmount)} at ${multiplier.toFixed(2)}x`, 'loss');
+      cashoutBtn.disabled = true;
+      cashoutBtn.classList.remove('active');
+      setTimeout(() => {
         betInput.disabled = false;
-        autoCashInput.disabled = false;
-        rocketEl.classList.remove('exploding', 'cashed', 'launched');
-        resetStatusClasses();
-        statusMessage.textContent = 'Place your bet and hit Launch.';
-        updateDetail('Multiplier explodes somewhere between 1.00x and 100.00x.');
-      }
+        resetRoundState();
+      }, ROUND_RESET_DELAY);
+    }
 
-      launchBtn.addEventListener('click', prepareForLaunch);
-      cashOutBtn.addEventListener('click', () => triggerCashOut(false));
+    function cashOut() {
+      if (!running || exploded) return;
+      running = false;
+      stopInterval();
+      stageEl.classList.remove('launching');
+      statusEl.textContent = `You won ${formatter.format(betAmount * multiplier)} at ${multiplier.toFixed(2)}x!`;
+      playSound({ type: 'triangle', frequency: 420, duration: 0.35, volume: 0.3 });
+      logResult(`Won ${formatter.format(betAmount * multiplier)} at ${multiplier.toFixed(2)}x`, 'win');
+      cashoutBtn.disabled = true;
+      cashoutBtn.classList.remove('active');
+      setTimeout(() => {
+        betInput.disabled = false;
+        resetRoundState();
+      }, ROUND_RESET_DELAY);
+    }
 
-      // Keyboard accessibility for quick cash out
-      document.addEventListener('keydown', (event) => {
-        if (event.code === 'Space' || event.code === 'Enter') {
-          if (state === 'idle') {
-            prepareForLaunch();
-          } else if (state === 'running') {
-            triggerCashOut(false);
-          }
-          event.preventDefault();
+    // === Events ===
+    betInput.addEventListener('input', (e) => {
+      const value = Number(e.target.value) || 0;
+      updateHint(value);
+    });
+
+    launchBtn.addEventListener('click', () => {
+      ensureAudio();
+      audioCtx.resume && audioCtx.resume();
+      launchRocket();
+    });
+
+    cashoutBtn.addEventListener('click', cashOut);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        if (running && !exploded) {
+          cashOut();
+        } else {
+          launchRocket();
         }
-      });
+      }
+    });
 
-      // Initialize UI
-      resetGame();
-    })();
+    resetRoundState();
   </script>
 </body>
 </html>
