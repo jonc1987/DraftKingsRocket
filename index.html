@@ -1,15 +1,910 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Draft Rocket</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Poppins:wght@400;500&display=swap');
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title></title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
+      :root {
+        --progress: 0;
+        --stage-hue: 210;
+        --glow-strength: 0.2;
+      }
 
-<body>
-  <script src="script.js"></script>
-</body>
+      * {
+        box-sizing: border-box;
+      }
 
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(18px, 3vw, 40px);
+        background: radial-gradient(circle at 20% 20%, #020514, #01020b 55%, #000000);
+        font-family: 'Poppins', 'Orbitron', system-ui, sans-serif;
+        color: #eaf9ff;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"%3E%3Ccircle cx="12" cy="18" r="1" fill="rgba(255,255,255,0.35)"/%3E%3Ccircle cx="88" cy="60" r="1" fill="rgba(255,255,255,0.35)"/%3E%3Ccircle cx="120" cy="18" r="1" fill="rgba(255,255,255,0.25)"/%3E%3Ccircle cx="60" cy="120" r="1" fill="rgba(255,255,255,0.2)"/%3E%3C/svg%3E');
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .app-shell {
+        width: min(1100px, 100%);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(16px, 3vw, 28px);
+      }
+
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+      }
+
+      .title {
+        font-size: clamp(22px, 3vw, 28px);
+        color: #6ef3ff;
+        font-weight: 600;
+      }
+
+      .balance {
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(16px, 2.5vw, 20px);
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .main-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
+        gap: clamp(20px, 3vw, 36px);
+      }
+
+      .device-shell {
+        position: relative;
+        padding: clamp(14px, 2vw, 22px);
+        border-radius: 40px;
+        background: linear-gradient(145deg, rgba(10, 18, 32, 0.85), rgba(1, 3, 10, 0.95));
+        border: 1px solid rgba(108, 255, 255, 0.18);
+        box-shadow: 0 45px 90px rgba(0, 0, 0, 0.65);
+      }
+
+      .device-shell::before,
+      .device-shell::after {
+        content: '';
+        position: absolute;
+        inset: 12px;
+        border-radius: 32px;
+        pointer-events: none;
+      }
+
+      .device-shell::before {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .device-shell::after {
+        box-shadow: inset 0 0 60px rgba(0, 255, 229, 0.05);
+      }
+
+      .stage {
+        position: relative;
+        aspect-ratio: 16 / 7.5;
+        width: 100%;
+        border-radius: 26px;
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          hsla(var(--stage-hue), 92%, 12%, 0.85),
+          rgba(0, 0, 0, 0.92)
+        );
+        border: 1px solid rgba(80, 255, 226, 0.18);
+        box-shadow: inset 0 8px 30px rgba(0, 0, 0, 0.8);
+      }
+
+      .stage::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, rgba(8, 14, 24, 0.7) 0%, rgba(8, 14, 24, 0.1) 55%, rgba(8, 14, 24, 0.7) 100%);
+        pointer-events: none;
+      }
+
+      .scroll-field {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          to top,
+          transparent,
+          transparent 54px,
+          rgba(255, 255, 255, 0.05) 56px
+        );
+        opacity: 0.45;
+        transform: translateY(0);
+        animation: drift 18s linear infinite;
+      }
+
+      @keyframes drift {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-56px);
+        }
+      }
+
+      .horizon-line {
+        position: absolute;
+        bottom: 14%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(0, 255, 158, 0.55), rgba(255, 255, 255, 0));
+        box-shadow: 0 0 14px rgba(0, 255, 200, 0.35);
+      }
+
+      .path-wrapper {
+        position: absolute;
+        inset: 12% 9% 18% 9%;
+      }
+
+      svg.flight-path {
+        width: 100%;
+        height: 100%;
+      }
+
+      .path-guide {
+        fill: none;
+        stroke: rgba(70, 150, 255, 0.28);
+        stroke-width: 2;
+        stroke-dasharray: 10 16;
+      }
+
+      .path-progress {
+        fill: none;
+        stroke: rgba(110, 255, 224, 0.85);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        filter: drop-shadow(0 0 12px rgba(110, 255, 224, 0.45));
+        transition: stroke-dashoffset 0.1s linear;
+      }
+
+      .track-glow {
+        position: absolute;
+        inset: 20% 12% 24% 12%;
+        background: radial-gradient(
+          circle at calc(var(--progress) * 100%) 55%,
+          rgba(94, 255, 224, var(--glow-strength)),
+          rgba(94, 255, 224, 0) 65%
+        );
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .history {
+        position: absolute;
+        left: 18px;
+        top: 18px;
+        display: grid;
+        gap: 8px;
+        font-size: 13px;
+        font-family: 'Orbitron', sans-serif;
+        color: rgba(255, 255, 255, 0.72);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .history li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .history li::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 8px currentColor;
+      }
+
+      .history .win {
+        color: #5dffbe;
+      }
+
+      .history .loss {
+        color: #ff8375;
+      }
+
+      .history .placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      .history .placeholder::before {
+        box-shadow: none;
+      }
+
+      .multiplier-readout {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-align: center;
+      }
+
+      #multiplier {
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(42px, 6vw, 64px);
+        text-shadow: 0 0 18px rgba(90, 255, 221, 0.6);
+      }
+
+      #roundResult {
+        font-size: clamp(16px, 2.5vw, 22px);
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      #roundResult.win {
+        color: #64ffd2;
+        text-shadow: 0 0 16px rgba(100, 255, 210, 0.55);
+      }
+
+      #roundResult.loss {
+        color: #ff8a78;
+        text-shadow: 0 0 12px rgba(255, 110, 110, 0.45);
+      }
+
+      .potential-readout {
+        position: absolute;
+        right: 26px;
+        top: 26px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      .rocket {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        left: 8%;
+        bottom: 18%;
+        transform: translate(-50%, 0) rotate(-6deg);
+        transition: transform 0.18s ease;
+      }
+
+      .stage.idle .rocket {
+        animation: idle-sway 3s ease-in-out infinite;
+      }
+
+      @keyframes idle-sway {
+        0%,
+        100% {
+          transform: translate(-50%, 0) rotate(-6deg) translateY(0);
+        }
+        50% {
+          transform: translate(-50%, 0) rotate(-3deg) translateY(-3px);
+        }
+      }
+
+      .rocket-body {
+        width: 26px;
+        height: 36px;
+        margin: 0 auto;
+        background: linear-gradient(180deg, #fefefe 0%, #8fc1ff 70%, #ffb678 100%);
+        border-radius: 16px 16px 10px 10px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+      }
+
+      .rocket-tip {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        width: 12px;
+        height: 16px;
+        background: linear-gradient(180deg, #92c8ff, #356eff);
+        border-radius: 50% 50% 40% 40%;
+        transform: translateX(-50%);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .rocket-fin {
+        position: absolute;
+        bottom: 8px;
+        width: 10px;
+        height: 16px;
+        background: linear-gradient(180deg, #ff8460, #ffb38a);
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .rocket-fin.left {
+        left: 2px;
+        transform: rotate(-18deg);
+      }
+
+      .rocket-fin.right {
+        right: 2px;
+        transform: rotate(18deg);
+      }
+
+      .rocket-flame {
+        position: absolute;
+        bottom: -14px;
+        left: 50%;
+        width: 12px;
+        height: 18px;
+        transform: translateX(-50%);
+        border-radius: 50% 50% 60% 60%;
+        background: radial-gradient(circle at 50% 10%, #fff, #ffd84e 60%, rgba(255, 92, 0, 0.8));
+        animation: flame 0.18s ease-in-out infinite;
+        filter: drop-shadow(0 0 10px rgba(255, 163, 72, 0.7));
+      }
+
+      @keyframes flame {
+        0%,
+        100% {
+          transform: translateX(-50%) scaleY(0.9);
+        }
+        50% {
+          transform: translateX(-50%) scaleY(1.1);
+        }
+      }
+
+      .stage.danger {
+        animation: danger-glow 0.6s ease-in-out infinite alternate;
+      }
+
+      @keyframes danger-glow {
+        from {
+          box-shadow: inset 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 0 rgba(255, 94, 94, 0.2);
+        }
+        to {
+          box-shadow: inset 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 94, 94, 0.4);
+        }
+      }
+
+      .stage.exploded {
+        animation: shake 0.35s linear;
+      }
+
+      @keyframes shake {
+        0% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        40% {
+          transform: translateX(4px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(3px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      .control-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: clamp(20px, 3vw, 28px);
+        border-radius: 26px;
+        border: 1px solid rgba(110, 255, 236, 0.16);
+        background: rgba(3, 9, 20, 0.88);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .control-panel h2 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+      }
+
+      input[type='number'] {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(126, 255, 234, 0.32);
+        background: rgba(255, 255, 255, 0.08);
+        color: #eaf9ff;
+        font-size: 18px;
+        font-family: 'Orbitron', sans-serif;
+      }
+
+      input[type='number']:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(94, 255, 224, 0.3);
+      }
+
+      .button-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        flex: 1;
+        border: none;
+        border-radius: 16px;
+        padding: 14px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 15px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      }
+
+      button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .launch {
+        background: linear-gradient(135deg, #00ffc8, #00aaff);
+        color: #002033;
+        box-shadow: 0 18px 40px rgba(0, 255, 222, 0.35);
+      }
+
+      .cashout {
+        background: linear-gradient(135deg, #ffc966, #ff6f6f);
+        color: #1d0505;
+        box-shadow: 0 18px 40px rgba(255, 122, 122, 0.35);
+      }
+
+      .launch:not(:disabled):hover,
+      .cashout:not(:disabled):hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+      }
+
+      .risk-copy,
+      .status {
+        font-size: 13px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.66);
+      }
+
+      .status {
+        min-height: 40px;
+        font-size: 14px;
+      }
+
+      .panel-meta {
+        display: flex;
+        justify-content: space-between;
+        font-family: 'Orbitron', sans-serif;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 13px;
+      }
+
+      .panel-meta span strong {
+        color: #6effde;
+      }
+
+      @media (max-width: 960px) {
+        .main-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .device-shell {
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .button-row {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="top-bar">
+        <div class="title">Rocket Line</div>
+        <div class="balance">Balance: $<span id="balance">1,000.00</span></div>
+      </header>
+      <main class="main-layout">
+        <div class="device-shell">
+          <div class="stage idle" id="stage">
+            <div class="scroll-field"></div>
+            <div class="path-wrapper">
+              <svg class="flight-path" viewBox="0 0 600 260" preserveAspectRatio="none">
+                <path
+                  id="pathGuide"
+                  class="path-guide"
+                  d="M40 210 Q 260 160 540 130"
+                ></path>
+                <path
+                  id="pathProgress"
+                  class="path-progress"
+                  d="M40 210 Q 260 160 540 130"
+                ></path>
+              </svg>
+            </div>
+            <div class="track-glow"></div>
+            <ul class="history" id="history"></ul>
+            <div class="potential-readout" id="potential">Potential: $0.00</div>
+            <div class="multiplier-readout">
+              <div id="multiplier">1.00x</div>
+              <div id="roundResult">Enter a bet to play.</div>
+            </div>
+            <div class="horizon-line"></div>
+            <div class="rocket" id="rocket">
+              <div class="rocket-tip"></div>
+              <div class="rocket-body"></div>
+              <div class="rocket-fin left"></div>
+              <div class="rocket-fin right"></div>
+              <div class="rocket-flame"></div>
+            </div>
+          </div>
+        </div>
+        <aside class="control-panel">
+          <h2>Controls</h2>
+          <div>
+            <label for="bet">Bet Amount</label>
+            <input type="number" id="bet" min="1" step="1" value="25" />
+          </div>
+          <div class="panel-meta">
+            <span>Risk Tier: <strong id="riskTag">Balanced</strong></span>
+            <span>Round: <strong id="roundTag">Idle</strong></span>
+          </div>
+          <div class="button-row">
+            <button class="launch" id="launchBtn">Launch</button>
+            <button class="cashout" id="cashOutBtn" disabled>Cash Out</button>
+          </div>
+          <div class="risk-copy" id="riskCopy"></div>
+          <div class="status" id="status">Rocket idling on the pad.</div>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      // ---------------- Configurable parameters ----------------
+      const settings = {
+        startingBalance: 1000,
+        tickInterval: 60,
+        maxMultiplier: 100,
+        rocketArc: {
+          floorX: 8, // percentage from left
+          ceilingX: 88,
+          floorY: 18, // percentage from bottom
+          ceilingY: 36,
+        },
+        dangerDistance: 0.6,
+        resetDelay: 1700,
+      };
+
+      // ---------------- State ----------------
+      let balance = settings.startingBalance;
+      let currentBet = 0;
+      let multiplier = 1;
+      let explosionPoint = 0;
+      let flightInterval = null;
+      let ticks = 0;
+      let inFlight = false;
+      let cashedOut = false;
+      const historyItems = [];
+
+      // ---------------- Elements ----------------
+      const balanceEl = document.getElementById('balance');
+      const betInput = document.getElementById('bet');
+      const riskTag = document.getElementById('riskTag');
+      const riskCopy = document.getElementById('riskCopy');
+      const roundTag = document.getElementById('roundTag');
+      const launchBtn = document.getElementById('launchBtn');
+      const cashBtn = document.getElementById('cashOutBtn');
+      const statusEl = document.getElementById('status');
+      const multiplierEl = document.getElementById('multiplier');
+      const resultEl = document.getElementById('roundResult');
+      const potentialEl = document.getElementById('potential');
+      const stage = document.getElementById('stage');
+      const rocket = document.getElementById('rocket');
+      const historyList = document.getElementById('history');
+      const pathProgress = document.getElementById('pathProgress');
+      const trackGlow = document.querySelector('.track-glow');
+
+      let pathLength = 1;
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+      function init() {
+        pathLength = pathProgress.getTotalLength();
+        pathProgress.style.strokeDasharray = pathLength;
+        pathProgress.style.strokeDashoffset = pathLength;
+        document.documentElement.style.setProperty('--progress', '0');
+        document.documentElement.style.setProperty('--stage-hue', '210');
+        document.documentElement.style.setProperty('--glow-strength', '0.2');
+        trackGlow.style.opacity = '0.15';
+        rocket.style.left = `${settings.rocketArc.floorX}%`;
+        rocket.style.bottom = `${settings.rocketArc.floorY}%`;
+        rocket.style.transform = 'translate(-50%, 0) rotate(-6deg)';
+        updateBalance();
+        updateRiskMessaging();
+        populateHistory();
+        roundTag.textContent = 'Idle';
+      }
+
+      // ---------------- Event listeners ----------------
+      launchBtn.addEventListener('click', launchRocket);
+      cashBtn.addEventListener('click', cashOut);
+      betInput.addEventListener('input', updateRiskMessaging);
+
+      // ---------------- Core helpers ----------------
+      function updateBalance() {
+        balanceEl.textContent = balance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      function updateRiskMessaging() {
+        const bet = Number(betInput.value) || 0;
+        if (bet >= 50) {
+          riskTag.textContent = 'Severe';
+          riskCopy.textContent = 'Large wagers put the rocket on edge. Expect abrupt failures between 1x and 5x, with only rare surges above.';
+        } else if (bet >= 10) {
+          riskTag.textContent = 'Pressured';
+          riskCopy.textContent = 'Mid-range stakes tighten the climb. Cash outs beyond 20x are uncommon—time your exit.';
+        } else if (bet > 0) {
+          riskTag.textContent = 'Balanced';
+          riskCopy.textContent = 'Smaller stakes enjoy broader ceilings. Massive multipliers remain elusive but possible.';
+        } else {
+          riskTag.textContent = '--';
+          riskCopy.textContent = '';
+        }
+      }
+
+      function launchRocket() {
+        if (inFlight) return;
+        const bet = Math.floor(Number(betInput.value));
+        if (!bet || bet <= 0) {
+          setStatus('Enter a valid bet to begin.');
+          return;
+        }
+        if (bet > balance) {
+          setStatus('Insufficient balance for that wager.');
+          return;
+        }
+
+        currentBet = bet;
+        balance -= currentBet;
+        updateBalance();
+
+        multiplier = 1;
+        ticks = 0;
+        cashedOut = false;
+        explosionPoint = getExplosionPoint(currentBet);
+        inFlight = true;
+
+        stage.classList.remove('idle', 'exploded', 'danger');
+        launchBtn.disabled = true;
+        cashBtn.disabled = false;
+        betInput.disabled = true;
+        roundTag.textContent = 'Live';
+        setStatus('Hold steady...');
+        resultEl.classList.remove('win', 'loss');
+        resultEl.textContent = 'In flight — watch the line!';
+        updateDisplays();
+
+        flightInterval = setInterval(updateFlight, settings.tickInterval);
+      }
+
+      function updateFlight() {
+        ticks += 1;
+        const accel = Math.min(0.008 + ticks / 1400, 0.17);
+        multiplier += multiplier * accel;
+        updateDisplays();
+        updateRocketPath();
+        updateStageHue();
+        pulseDanger();
+
+        if (multiplier >= explosionPoint) {
+          explodeRocket();
+        }
+      }
+
+      function updateDisplays() {
+        const rounded = multiplier.toFixed(2);
+        multiplierEl.textContent = `${rounded}x`;
+        if (inFlight) {
+          const potential = currentBet * multiplier;
+          potentialEl.textContent = `Potential: $${potential.toFixed(2)}`;
+        } else {
+          potentialEl.textContent = 'Potential: $0.00';
+        }
+      }
+
+      function updateRocketPath() {
+        const riseFactor = Math.max(multiplier - 1, 0);
+        const normalized = Math.pow(Math.min(riseFactor / 8, 1), 0.58);
+        const clamped = Math.max(0, Math.min(normalized, 1));
+        const xPercent = settings.rocketArc.floorX + (settings.rocketArc.ceilingX - settings.rocketArc.floorX) * clamped;
+        const baseY = settings.rocketArc.floorY + (settings.rocketArc.ceilingY - settings.rocketArc.floorY) * Math.pow(clamped, 1.25);
+        rocket.style.left = `${xPercent}%`;
+        rocket.style.bottom = `${baseY}%`;
+        rocket.style.transform = `translate(-50%, 0) rotate(${clamped * 12 - 6}deg)`;
+
+        const progress = clamped;
+        document.documentElement.style.setProperty('--progress', progress.toString());
+        pathProgress.style.strokeDashoffset = pathLength * (1 - progress);
+        trackGlow.style.opacity = Math.max(0.15, progress * 0.8).toString();
+        document.documentElement.style.setProperty('--glow-strength', (0.1 + progress * 0.45).toFixed(3));
+      }
+
+      function updateStageHue() {
+        const hueShift = Math.max(160, 210 - multiplier * 2.3);
+        document.documentElement.style.setProperty('--stage-hue', hueShift.toFixed(1));
+      }
+
+      function pulseDanger() {
+        if (explosionPoint - multiplier <= settings.dangerDistance) {
+          stage.classList.add('danger');
+        }
+      }
+
+      function cashOut() {
+        if (!inFlight || cashedOut) return;
+        cashedOut = true;
+        const winnings = currentBet * multiplier;
+        balance += winnings;
+        updateBalance();
+
+        setStatus(`You bailed at ${multiplier.toFixed(2)}x for $${winnings.toFixed(2)}.`);
+        resultEl.classList.remove('loss');
+        resultEl.classList.add('win');
+        resultEl.textContent = `Won = $${winnings.toFixed(2)}`;
+        roundTag.textContent = 'Cashed Out';
+        recordHistory(true, multiplier);
+        endFlight();
+        scheduleReset();
+      }
+
+      function explodeRocket() {
+        if (!inFlight) return;
+        stage.classList.add('exploded');
+        setStatus(`Explosion at ${explosionPoint.toFixed(2)}x. Bet lost.`);
+        resultEl.classList.remove('win');
+        resultEl.classList.add('loss');
+        resultEl.textContent = 'Busted — bet lost.';
+        roundTag.textContent = 'Busted';
+        recordHistory(false, explosionPoint);
+        endFlight();
+        scheduleReset();
+      }
+
+      function endFlight() {
+        clearInterval(flightInterval);
+        flightInterval = null;
+        inFlight = false;
+        cashBtn.disabled = true;
+      }
+
+      function scheduleReset() {
+        setTimeout(resetGame, settings.resetDelay);
+      }
+
+      function resetGame() {
+        multiplier = 1;
+        updateDisplays();
+        document.documentElement.style.setProperty('--progress', '0');
+        document.documentElement.style.setProperty('--stage-hue', '210');
+        document.documentElement.style.setProperty('--glow-strength', '0.2');
+        pathProgress.style.strokeDashoffset = pathLength;
+        stage.classList.remove('danger');
+        stage.classList.remove('exploded');
+        stage.classList.add('idle');
+        rocket.style.left = `${settings.rocketArc.floorX}%`;
+        rocket.style.bottom = `${settings.rocketArc.floorY}%`;
+        rocket.style.transform = 'translate(-50%, 0) rotate(-6deg)';
+        potentialEl.textContent = 'Potential: $0.00';
+        roundTag.textContent = 'Idle';
+        launchBtn.disabled = false;
+        betInput.disabled = false;
+        cashBtn.disabled = true;
+        currentBet = 0;
+        resultEl.classList.remove('win', 'loss');
+        resultEl.textContent = 'Enter a bet to play.';
+        setStatus('Rocket idling on the pad.');
+        cashedOut = false;
+      }
+
+      function getExplosionPoint(bet) {
+        const roll = Math.random();
+        if (bet < 10) {
+          if (roll < 0.6) return randRange(1, 12);
+          if (roll < 0.85) return randRange(12, 25);
+          if (roll < 0.95) return randRange(25, 50);
+          return randRange(50, settings.maxMultiplier);
+        }
+        if (bet <= 50) {
+          if (roll < 0.7) return randRange(1, 12);
+          if (roll < 0.9) return randRange(12, 20);
+          return randRange(20, 60);
+        }
+        if (roll < 0.8) return randRange(1, 5);
+        if (roll < 0.95) return randRange(5, 12);
+        return randRange(12, 40);
+      }
+
+      function randRange(min, max) {
+        return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+      }
+
+      function setStatus(message) {
+        statusEl.textContent = message;
+      }
+
+      function recordHistory(win, value) {
+        historyItems.unshift({ win, value: value.toFixed(2) });
+        if (historyItems.length > 4) historyItems.pop();
+        populateHistory();
+      }
+
+      function populateHistory() {
+        historyList.innerHTML = '';
+        for (let i = 0; i < 4; i += 1) {
+          const item = historyItems[i];
+          const li = document.createElement('li');
+          if (item) {
+            li.className = item.win ? 'win' : 'loss';
+            li.textContent = `${item.win ? 'Win' : 'Bust'} @ ${item.value}x`;
+          } else {
+            li.className = 'placeholder';
+            li.textContent = '--';
+          }
+          historyList.appendChild(li);
+        }
+      }
+    </script>
+  </body>
 </html>
