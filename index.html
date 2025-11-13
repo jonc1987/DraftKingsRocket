@@ -11,6 +11,7 @@
         --progress: 0;
         --stage-hue: 210;
         --glow-strength: 0.2;
+        --pulse-progress: 0;
       }
 
       * {
@@ -49,9 +50,60 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
         gap: 18px;
         text-transform: uppercase;
         letter-spacing: 0.16em;
+      }
+
+      .mode-switcher {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(6, 22, 35, 0.6);
+        border: 1px solid rgba(110, 255, 236, 0.18);
+        box-shadow: inset 0 0 18px rgba(0, 255, 204, 0.08);
+      }
+
+      .mode-button {
+        flex: 0 0 auto;
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        background: rgba(12, 32, 46, 0.65);
+        color: rgba(230, 249, 255, 0.85);
+        font-size: 13px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .mode-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(0, 255, 204, 0.2);
+      }
+
+      .mode-button.active {
+        background: linear-gradient(135deg, #00ffc8, #00aaff);
+        color: #002033;
+        box-shadow: 0 16px 30px rgba(0, 255, 222, 0.28);
+      }
+
+      .mode-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(18px, 3vw, 26px);
+      }
+
+      .mode-panel {
+        display: none;
+      }
+
+      .mode-panel.active {
+        display: block;
       }
 
       .title {
@@ -194,6 +246,98 @@
         transition: opacity 0.3s ease;
       }
 
+      .pulse-stage {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pulse-track {
+        position: absolute;
+        inset: 44% 11%;
+        height: 12%;
+        background: linear-gradient(90deg, rgba(12, 40, 58, 0.4), rgba(40, 142, 134, 0.4));
+        border-radius: 40px;
+        box-shadow: inset 0 0 18px rgba(0, 255, 204, 0.18);
+      }
+
+      .pulse-track::after {
+        content: '';
+        position: absolute;
+        inset: calc(50% - 2px) 4%;
+        background: linear-gradient(90deg, rgba(52, 255, 214, 0), rgba(52, 255, 214, 0.6), rgba(52, 255, 214, 0));
+        border-radius: 20px;
+        box-shadow: 0 0 18px rgba(94, 255, 224, 0.35);
+      }
+
+      .pulse-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 22px;
+        height: 22px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffffff 0%, #7cffea 55%, rgba(124, 255, 234, 0) 80%);
+        box-shadow: 0 0 16px rgba(94, 255, 224, 0.55), 0 0 34px rgba(0, 198, 255, 0.3);
+        transition: filter 0.2s ease;
+      }
+
+      .pulse-glow {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 280px;
+        height: 280px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, rgba(94, 255, 224, 0.35), rgba(94, 255, 224, 0));
+        filter: blur(14px);
+        pointer-events: none;
+        opacity: 0.35;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .pulse-stage.live .pulse-line {
+        animation: pulse-hum 0.6s ease-in-out infinite alternate;
+      }
+
+      @keyframes pulse-hum {
+        from {
+          filter: drop-shadow(0 0 12px rgba(94, 255, 224, 0.6));
+        }
+        to {
+          filter: drop-shadow(0 0 18px rgba(0, 198, 255, 0.5));
+        }
+      }
+
+      .pulse-stage.overloaded .pulse-line {
+        animation: pulse-flicker 0.16s linear 4;
+      }
+
+      @keyframes pulse-flicker {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      .pulse-stage.overloaded {
+        animation: pulse-fade 0.6s ease forwards;
+      }
+
+      @keyframes pulse-fade {
+        0% {
+          opacity: 1;
+          filter: none;
+        }
+        100% {
+          opacity: 0.3;
+          filter: blur(2px);
+        }
+      }
+
       .history {
         position: absolute;
         left: 18px;
@@ -250,23 +394,27 @@
         text-align: center;
       }
 
-      #multiplier {
+      #multiplier,
+      #pulseMultiplier {
         font-family: 'Orbitron', sans-serif;
         font-size: clamp(42px, 6vw, 64px);
         text-shadow: 0 0 18px rgba(90, 255, 221, 0.6);
       }
 
-      #roundResult {
+      #roundResult,
+      #pulseRoundResult {
         font-size: clamp(16px, 2.5vw, 22px);
         color: rgba(255, 255, 255, 0.82);
       }
 
-      #roundResult.win {
+      #roundResult.win,
+      #pulseRoundResult.win {
         color: #64ffd2;
         text-shadow: 0 0 16px rgba(100, 255, 210, 0.55);
       }
 
-      #roundResult.loss {
+      #roundResult.loss,
+      #pulseRoundResult.loss {
         color: #ff8a78;
         text-shadow: 0 0 12px rgba(255, 110, 110, 0.45);
       }
@@ -534,6 +682,11 @@
           align-items: flex-start;
         }
 
+        .mode-switcher {
+          width: 100%;
+          justify-content: center;
+        }
+
         .button-row {
           flex-direction: column;
         }
@@ -548,60 +701,107 @@
     <div class="app-shell">
       <header class="top-bar">
         <div class="title">Rocket Line</div>
+        <nav class="mode-switcher" aria-label="Game modes">
+          <button class="mode-button active" data-mode="rocket" type="button">
+            Rocket Mode
+          </button>
+          <button class="mode-button" data-mode="pulse" type="button">Pulse Cash</button>
+        </nav>
         <div class="balance">Balance: $<span id="balance">1,000.00</span></div>
       </header>
-      <main class="main-layout">
-        <div class="device-shell">
-          <div class="stage idle" id="stage">
-            <div class="scroll-field"></div>
-            <div class="path-wrapper">
-              <svg class="flight-path" viewBox="0 0 600 260" preserveAspectRatio="none">
-                <path
-                  id="pathGuide"
-                  class="path-guide"
-                  d="M40 210 Q 260 160 540 130"
-                ></path>
-                <path
-                  id="pathProgress"
-                  class="path-progress"
-                  d="M40 210 Q 260 160 540 130"
-                ></path>
-              </svg>
+      <main class="mode-wrapper">
+        <section class="mode-panel active" id="rocketMode" aria-label="Rocket Mode">
+          <div class="main-layout">
+            <div class="device-shell">
+              <div class="stage idle" id="rocketStage">
+                <div class="scroll-field"></div>
+                <div class="path-wrapper">
+                  <svg class="flight-path" viewBox="0 0 600 260" preserveAspectRatio="none">
+                    <path
+                      id="pathGuide"
+                      class="path-guide"
+                      d="M40 210 Q 260 160 540 130"
+                    ></path>
+                    <path
+                      id="pathProgress"
+                      class="path-progress"
+                      d="M40 210 Q 260 160 540 130"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="track-glow" id="rocketTrackGlow"></div>
+                <ul class="history" id="history"></ul>
+                <div class="potential-readout" id="potential">Potential: $0.00</div>
+                <div class="multiplier-readout">
+                  <div id="multiplier">1.00x</div>
+                  <div id="roundResult">Enter a bet to play.</div>
+                </div>
+                <div class="horizon-line"></div>
+                <div class="rocket" id="rocket">
+                  <div class="rocket-tip"></div>
+                  <div class="rocket-body"></div>
+                  <div class="rocket-fin left"></div>
+                  <div class="rocket-fin right"></div>
+                  <div class="rocket-flame"></div>
+                </div>
+              </div>
             </div>
-            <div class="track-glow"></div>
-            <ul class="history" id="history"></ul>
-            <div class="potential-readout" id="potential">Potential: $0.00</div>
-            <div class="multiplier-readout">
-              <div id="multiplier">1.00x</div>
-              <div id="roundResult">Enter a bet to play.</div>
+            <aside class="control-panel">
+              <h2>Controls</h2>
+              <div>
+                <label for="bet">Bet Amount</label>
+                <input type="number" id="bet" min="1" step="1" value="25" />
+              </div>
+              <div class="panel-meta">
+                <span>Risk Tier: <strong id="riskTag">Balanced</strong></span>
+                <span>Round: <strong id="roundTag">Idle</strong></span>
+              </div>
+              <div class="button-row">
+                <button class="launch" id="launchBtn">Launch</button>
+                <button class="cashout" id="cashOutBtn" disabled>Cash Out</button>
+              </div>
+              <div class="risk-copy" id="riskCopy"></div>
+              <div class="status" id="status">Rocket idling on the pad.</div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="mode-panel" id="pulseMode" aria-label="Pulse Cash Mode">
+          <div class="main-layout">
+            <div class="device-shell">
+              <div class="stage idle pulse-stage" id="pulseStage">
+                <div class="scroll-field"></div>
+                <div class="pulse-track">
+                  <div class="pulse-glow" id="pulseGlow"></div>
+                  <div class="pulse-line" id="pulseLine"></div>
+                </div>
+                <ul class="history" id="pulseHistory"></ul>
+                <div class="potential-readout" id="pulsePotential">Potential: $0.00</div>
+                <div class="multiplier-readout">
+                  <div id="pulseMultiplier">1.00x</div>
+                  <div id="pulseRoundResult">Enter a bet to play.</div>
+                </div>
+              </div>
             </div>
-            <div class="horizon-line"></div>
-            <div class="rocket" id="rocket">
-              <div class="rocket-tip"></div>
-              <div class="rocket-body"></div>
-              <div class="rocket-fin left"></div>
-              <div class="rocket-fin right"></div>
-              <div class="rocket-flame"></div>
-            </div>
+            <aside class="control-panel">
+              <h2>Pulse Console</h2>
+              <div>
+                <label for="pulseBet">Bet Amount</label>
+                <input type="number" id="pulseBet" min="1" step="1" value="25" />
+              </div>
+              <div class="panel-meta">
+                <span>Risk Tier: <strong id="pulseRiskTag">Balanced</strong></span>
+                <span>Round: <strong id="pulseRoundTag">Idle</strong></span>
+              </div>
+              <div class="button-row">
+                <button class="launch" id="pulseLaunchBtn">Launch Pulse</button>
+                <button class="cashout" id="pulseCashBtn" disabled>Cash Out</button>
+              </div>
+              <div class="risk-copy" id="pulseRiskCopy"></div>
+              <div class="status" id="pulseStatus">Pulse core stable.</div>
+            </aside>
           </div>
-        </div>
-        <aside class="control-panel">
-          <h2>Controls</h2>
-          <div>
-            <label for="bet">Bet Amount</label>
-            <input type="number" id="bet" min="1" step="1" value="25" />
-          </div>
-          <div class="panel-meta">
-            <span>Risk Tier: <strong id="riskTag">Balanced</strong></span>
-            <span>Round: <strong id="roundTag">Idle</strong></span>
-          </div>
-          <div class="button-row">
-            <button class="launch" id="launchBtn">Launch</button>
-            <button class="cashout" id="cashOutBtn" disabled>Cash Out</button>
-          </div>
-          <div class="risk-copy" id="riskCopy"></div>
-          <div class="status" id="status">Rocket idling on the pad.</div>
-        </aside>
+        </section>
       </main>
     </div>
 
@@ -621,8 +821,11 @@
         resetDelay: 1700,
       };
 
-      // ---------------- State ----------------
+      // ---------------- Shared state ----------------
       let balance = settings.startingBalance;
+      const historyItems = [];
+
+      // ---------------- Rocket state ----------------
       let currentBet = 0;
       let multiplier = 1;
       let explosionPoint = 0;
@@ -630,10 +833,29 @@
       let ticks = 0;
       let inFlight = false;
       let cashedOut = false;
-      const historyItems = [];
+
+      // ---------------- Pulse state ----------------
+      let pulseBet = 0;
+      let pulseMultiplier = 1;
+      let pulseExplosionPoint = 0;
+      let pulseTicks = 0;
+      let pulseRunning = false;
+      let pulseFrame = null;
+      let pulseCashedOut = false;
+
+      let pathLength = 1;
+      let activeMode = 'rocket';
 
       // ---------------- Elements ----------------
+      const titleEl = document.querySelector('.title');
       const balanceEl = document.getElementById('balance');
+      const modeButtons = document.querySelectorAll('.mode-button');
+      const panels = {
+        rocket: document.getElementById('rocketMode'),
+        pulse: document.getElementById('pulseMode'),
+      };
+
+      // Rocket elements
       const betInput = document.getElementById('bet');
       const riskTag = document.getElementById('riskTag');
       const riskCopy = document.getElementById('riskCopy');
@@ -644,13 +866,28 @@
       const multiplierEl = document.getElementById('multiplier');
       const resultEl = document.getElementById('roundResult');
       const potentialEl = document.getElementById('potential');
-      const stage = document.getElementById('stage');
-      const rocket = document.getElementById('rocket');
+      const rocketStage = document.getElementById('rocketStage');
+      const rocketSprite = document.getElementById('rocket');
       const historyList = document.getElementById('history');
+      const pulseHistoryList = document.getElementById('pulseHistory');
       const pathProgress = document.getElementById('pathProgress');
-      const trackGlow = document.querySelector('.track-glow');
+      const trackGlow = document.getElementById('rocketTrackGlow');
 
-      let pathLength = 1;
+      // Pulse elements
+      const pulseBetInput = document.getElementById('pulseBet');
+      const pulseRiskTag = document.getElementById('pulseRiskTag');
+      const pulseRiskCopy = document.getElementById('pulseRiskCopy');
+      const pulseRoundTag = document.getElementById('pulseRoundTag');
+      const pulseLaunchBtn = document.getElementById('pulseLaunchBtn');
+      const pulseCashBtn = document.getElementById('pulseCashBtn');
+      const pulseStatusEl = document.getElementById('pulseStatus');
+      const pulseMultiplierEl = document.getElementById('pulseMultiplier');
+      const pulseResultEl = document.getElementById('pulseRoundResult');
+      const pulsePotentialEl = document.getElementById('pulsePotential');
+      const pulseStage = document.getElementById('pulseStage');
+      const pulseLine = document.getElementById('pulseLine');
+      const pulseGlow = document.getElementById('pulseGlow');
+
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
       } else {
@@ -665,21 +902,28 @@
         document.documentElement.style.setProperty('--stage-hue', '210');
         document.documentElement.style.setProperty('--glow-strength', '0.2');
         trackGlow.style.opacity = '0.15';
-        rocket.style.left = `${settings.rocketArc.floorX}%`;
-        rocket.style.bottom = `${settings.rocketArc.floorY}%`;
-        rocket.style.transform = 'translate(-50%, 0) rotate(-6deg)';
+        rocketSprite.style.left = `${settings.rocketArc.floorX}%`;
+        rocketSprite.style.bottom = `${settings.rocketArc.floorY}%`;
+        rocketSprite.style.transform = 'translate(-50%, 0) rotate(-6deg)';
         updateBalance();
         updateRiskMessaging();
         populateHistory();
         roundTag.textContent = 'Idle';
+        resetPulseGame(true);
+        updatePulseRiskMessaging();
+
+        modeButtons.forEach((button) => {
+          button.addEventListener('click', () => switchMode(button.dataset.mode));
+        });
+        launchBtn.addEventListener('click', launchRocket);
+        cashBtn.addEventListener('click', cashOut);
+        betInput.addEventListener('input', updateRiskMessaging);
+        pulseLaunchBtn.addEventListener('click', startPulseCash);
+        pulseCashBtn.addEventListener('click', cashOutPulse);
+        pulseBetInput.addEventListener('input', updatePulseRiskMessaging);
       }
 
-      // ---------------- Event listeners ----------------
-      launchBtn.addEventListener('click', launchRocket);
-      cashBtn.addEventListener('click', cashOut);
-      betInput.addEventListener('input', updateRiskMessaging);
-
-      // ---------------- Core helpers ----------------
+      // ---------------- Shared helpers ----------------
       function updateBalance() {
         balanceEl.textContent = balance.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -687,6 +931,60 @@
         });
       }
 
+      function switchMode(mode) {
+        if (mode === activeMode) return;
+        if (mode === 'pulse' && inFlight) {
+          setStatus('Finish the rocket round before switching modes.');
+          return;
+        }
+        if (mode === 'rocket' && pulseRunning) {
+          setPulseStatus('Stabilize this pulse before changing modes.');
+          return;
+        }
+
+        activeMode = mode;
+        Object.entries(panels).forEach(([key, panel]) => {
+          panel.classList.toggle('active', key === mode);
+        });
+        modeButtons.forEach((button) => {
+          button.classList.toggle('active', button.dataset.mode === mode);
+        });
+        if (titleEl) {
+          titleEl.textContent = mode === 'rocket' ? 'Rocket Line' : 'Pulse Cash';
+        }
+      }
+
+      function recordHistory(win, value) {
+        historyItems.unshift({ win, value: value.toFixed(2) });
+        if (historyItems.length > 4) historyItems.pop();
+        populateHistory();
+      }
+
+      function populateHistory() {
+        const lists = [historyList, pulseHistoryList];
+        lists.forEach((list) => {
+          if (!list) return;
+          list.innerHTML = '';
+          for (let i = 0; i < 4; i += 1) {
+            const item = historyItems[i];
+            const li = document.createElement('li');
+            if (item) {
+              li.className = item.win ? 'win' : 'loss';
+              li.textContent = `${item.win ? 'Win' : 'Bust'} @ ${item.value}x`;
+            } else {
+              li.className = 'placeholder';
+              li.textContent = '--';
+            }
+            list.appendChild(li);
+          }
+        });
+      }
+
+      function randRange(min, max) {
+        return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+      }
+
+      // ---------------- Rocket mode ----------------
       function updateRiskMessaging() {
         const bet = Number(betInput.value) || 0;
         if (bet >= 50) {
@@ -726,7 +1024,7 @@
         explosionPoint = getExplosionPoint(currentBet);
         inFlight = true;
 
-        stage.classList.remove('idle', 'exploded', 'danger');
+        rocketStage.classList.remove('idle', 'exploded', 'danger');
         launchBtn.disabled = true;
         cashBtn.disabled = false;
         betInput.disabled = true;
@@ -734,7 +1032,7 @@
         setStatus('Hold steady...');
         resultEl.classList.remove('win', 'loss');
         resultEl.textContent = 'In flight — watch the line!';
-        updateDisplays();
+        updateRocketDisplays();
 
         flightInterval = setInterval(updateFlight, settings.tickInterval);
       }
@@ -743,17 +1041,17 @@
         ticks += 1;
         const accel = Math.min(0.008 + ticks / 1400, 0.17);
         multiplier += multiplier * accel;
-        updateDisplays();
+        updateRocketDisplays();
         updateRocketPath();
         updateStageHue();
-        pulseDanger();
+        flagRocketDanger();
 
         if (multiplier >= explosionPoint) {
           explodeRocket();
         }
       }
 
-      function updateDisplays() {
+      function updateRocketDisplays() {
         const rounded = multiplier.toFixed(2);
         multiplierEl.textContent = `${rounded}x`;
         if (inFlight) {
@@ -768,11 +1066,13 @@
         const riseFactor = Math.max(multiplier - 1, 0);
         const normalized = Math.pow(Math.min(riseFactor / 8, 1), 0.58);
         const clamped = Math.max(0, Math.min(normalized, 1));
-        const xPercent = settings.rocketArc.floorX + (settings.rocketArc.ceilingX - settings.rocketArc.floorX) * clamped;
-        const baseY = settings.rocketArc.floorY + (settings.rocketArc.ceilingY - settings.rocketArc.floorY) * Math.pow(clamped, 1.25);
-        rocket.style.left = `${xPercent}%`;
-        rocket.style.bottom = `${baseY}%`;
-        rocket.style.transform = `translate(-50%, 0) rotate(${clamped * 12 - 6}deg)`;
+        const xPercent =
+          settings.rocketArc.floorX + (settings.rocketArc.ceilingX - settings.rocketArc.floorX) * clamped;
+        const baseY =
+          settings.rocketArc.floorY + (settings.rocketArc.ceilingY - settings.rocketArc.floorY) * Math.pow(clamped, 1.25);
+        rocketSprite.style.left = `${xPercent}%`;
+        rocketSprite.style.bottom = `${baseY}%`;
+        rocketSprite.style.transform = `translate(-50%, 0) rotate(${clamped * 12 - 6}deg)`;
 
         const progress = clamped;
         document.documentElement.style.setProperty('--progress', progress.toString());
@@ -786,9 +1086,9 @@
         document.documentElement.style.setProperty('--stage-hue', hueShift.toFixed(1));
       }
 
-      function pulseDanger() {
+      function flagRocketDanger() {
         if (explosionPoint - multiplier <= settings.dangerDistance) {
-          stage.classList.add('danger');
+          rocketStage.classList.add('danger');
         }
       }
 
@@ -811,7 +1111,7 @@
 
       function explodeRocket() {
         if (!inFlight) return;
-        stage.classList.add('exploded');
+        rocketStage.classList.add('exploded');
         setStatus(`Explosion at ${explosionPoint.toFixed(2)}x. Bet lost.`);
         resultEl.classList.remove('win');
         resultEl.classList.add('loss');
@@ -835,17 +1135,17 @@
 
       function resetGame() {
         multiplier = 1;
-        updateDisplays();
+        updateRocketDisplays();
         document.documentElement.style.setProperty('--progress', '0');
         document.documentElement.style.setProperty('--stage-hue', '210');
         document.documentElement.style.setProperty('--glow-strength', '0.2');
         pathProgress.style.strokeDashoffset = pathLength;
-        stage.classList.remove('danger');
-        stage.classList.remove('exploded');
-        stage.classList.add('idle');
-        rocket.style.left = `${settings.rocketArc.floorX}%`;
-        rocket.style.bottom = `${settings.rocketArc.floorY}%`;
-        rocket.style.transform = 'translate(-50%, 0) rotate(-6deg)';
+        rocketStage.classList.remove('danger');
+        rocketStage.classList.remove('exploded');
+        rocketStage.classList.add('idle');
+        rocketSprite.style.left = `${settings.rocketArc.floorX}%`;
+        rocketSprite.style.bottom = `${settings.rocketArc.floorY}%`;
+        rocketSprite.style.transform = 'translate(-50%, 0) rotate(-6deg)';
         potentialEl.textContent = 'Potential: $0.00';
         roundTag.textContent = 'Idle';
         launchBtn.disabled = false;
@@ -876,34 +1176,198 @@
         return randRange(12, 40);
       }
 
-      function randRange(min, max) {
-        return parseFloat((Math.random() * (max - min) + min).toFixed(2));
-      }
-
       function setStatus(message) {
         statusEl.textContent = message;
       }
 
-      function recordHistory(win, value) {
-        historyItems.unshift({ win, value: value.toFixed(2) });
-        if (historyItems.length > 4) historyItems.pop();
-        populateHistory();
+      // ---------------- Pulse Cash mode ----------------
+      function updatePulseRiskMessaging() {
+        const bet = Number(pulseBetInput.value) || 0;
+        if (bet > 50) {
+          pulseRiskTag.textContent = 'Volatile';
+          pulseRiskCopy.textContent = 'Huge stakes overload containment. Expect quick breaks between 1x and 10x, with only fleeting bursts above.';
+        } else if (bet >= 10) {
+          pulseRiskTag.textContent = 'Tense';
+          pulseRiskCopy.textContent = 'Containment favors short runs near 1x–25x. Watch the line and cash out early.';
+        } else if (bet > 0) {
+          pulseRiskTag.textContent = 'Balanced';
+          pulseRiskCopy.textContent = 'Light pulses drift calmly. Full 1x–100x climbs stay within reach if luck holds.';
+        } else {
+          pulseRiskTag.textContent = '--';
+          pulseRiskCopy.textContent = '';
+        }
       }
 
-      function populateHistory() {
-        historyList.innerHTML = '';
-        for (let i = 0; i < 4; i += 1) {
-          const item = historyItems[i];
-          const li = document.createElement('li');
-          if (item) {
-            li.className = item.win ? 'win' : 'loss';
-            li.textContent = `${item.win ? 'Win' : 'Bust'} @ ${item.value}x`;
-          } else {
-            li.className = 'placeholder';
-            li.textContent = '--';
-          }
-          historyList.appendChild(li);
+      function startPulseCash() {
+        if (pulseRunning) return;
+        const bet = Math.floor(Number(pulseBetInput.value));
+        if (!bet || bet <= 0) {
+          setPulseStatus('Enter a valid bet to begin.');
+          return;
         }
+        if (bet > balance) {
+          setPulseStatus('Insufficient balance for that wager.');
+          return;
+        }
+
+        pulseBet = bet;
+        balance -= pulseBet;
+        updateBalance();
+
+        pulseMultiplier = 1;
+        pulseTicks = 0;
+        pulseCashedOut = false;
+        pulseExplosionPoint = getPulseExplosionPoint(pulseBet);
+        pulseRunning = true;
+
+        pulseStage.classList.remove('idle', 'overloaded', 'exploded');
+        pulseStage.classList.add('live');
+        pulseLaunchBtn.disabled = true;
+        pulseCashBtn.disabled = false;
+        pulseBetInput.disabled = true;
+        pulseRoundTag.textContent = 'Live';
+        pulseResultEl.classList.remove('win', 'loss');
+        pulseResultEl.textContent = 'Pulse climbing...';
+        setPulseStatus('Ride the surge and cash before overload.');
+        updatePulseDisplays();
+        setPulseTrackProgress(0);
+
+        pulseFrame = requestAnimationFrame(stepPulse);
+      }
+
+      function stepPulse() {
+        if (!pulseRunning) return;
+        pulseTicks += 1;
+        const accel = Math.min(0.01 + pulseTicks / 1600, 0.16);
+        pulseMultiplier += pulseMultiplier * accel;
+        updatePulseDisplays();
+        updatePulseTrack();
+
+        if (pulseMultiplier >= pulseExplosionPoint) {
+          explodePulse();
+          return;
+        }
+
+        pulseFrame = requestAnimationFrame(stepPulse);
+      }
+
+      function updatePulseDisplays() {
+        const rounded = pulseMultiplier.toFixed(2);
+        pulseMultiplierEl.textContent = `${rounded}x`;
+        if (pulseRunning) {
+          const potential = pulseBet * pulseMultiplier;
+          pulsePotentialEl.textContent = `Potential: $${potential.toFixed(2)}`;
+        } else {
+          pulsePotentialEl.textContent = 'Potential: $0.00';
+        }
+      }
+
+      function updatePulseTrack() {
+        const riseFactor = Math.max(pulseMultiplier - 1, 0);
+        const normalized = Math.pow(Math.min(riseFactor / 12, 1), 0.6);
+        setPulseTrackProgress(normalized);
+      }
+
+      function setPulseTrackProgress(progress) {
+        const clamped = Math.max(0, Math.min(progress, 1));
+        const offset = 4 + clamped * 92;
+        pulseLine.style.left = `${offset}%`;
+        pulseGlow.style.left = `${offset}%`;
+        pulseGlow.style.opacity = (0.2 + clamped * 0.55).toFixed(2);
+        pulseGlow.style.transform = `translate(-50%, -50%) scale(${1 + clamped * 0.45})`;
+        pulseStage.style.setProperty('--pulse-progress', clamped.toString());
+      }
+
+      function cashOutPulse() {
+        if (!pulseRunning || pulseCashedOut) return;
+        pulseCashedOut = true;
+        const winnings = pulseBet * pulseMultiplier;
+        balance += winnings;
+        updateBalance();
+
+        setPulseStatus(`Cashed at ${pulseMultiplier.toFixed(2)}x for $${winnings.toFixed(2)}.`);
+        pulseResultEl.classList.remove('loss');
+        pulseResultEl.classList.add('win');
+        pulseResultEl.textContent = `Won = $${winnings.toFixed(2)}`;
+        pulseRoundTag.textContent = 'Cashed Out';
+        recordHistory(true, pulseMultiplier);
+        endPulse();
+        schedulePulseReset();
+      }
+
+      function explodePulse() {
+        if (!pulseRunning) return;
+        pulseStage.classList.add('overloaded', 'exploded');
+        setPulseStatus(`Overload at ${pulseExplosionPoint.toFixed(2)}x. Bet lost.`);
+        pulseResultEl.classList.remove('win');
+        pulseResultEl.classList.add('loss');
+        pulseResultEl.textContent = 'Core overloaded — bet lost.';
+        pulseRoundTag.textContent = 'Busted';
+        recordHistory(false, pulseExplosionPoint);
+        endPulse();
+        schedulePulseReset();
+      }
+
+      function endPulse() {
+        if (pulseFrame) {
+          cancelAnimationFrame(pulseFrame);
+          pulseFrame = null;
+        }
+        pulseRunning = false;
+        pulseCashBtn.disabled = true;
+      }
+
+      function schedulePulseReset() {
+        setTimeout(() => resetPulseGame(false), settings.resetDelay);
+      }
+
+      function resetPulseGame(initial) {
+        pulseMultiplier = 1;
+        pulseTicks = 0;
+        pulseBet = 0;
+        pulseCashedOut = false;
+        pulseRunning = false;
+        updatePulseDisplays();
+        setPulseTrackProgress(0);
+        pulseStage.classList.remove('live', 'overloaded', 'exploded');
+        pulseStage.classList.add('idle');
+        pulseLaunchBtn.disabled = false;
+        pulseCashBtn.disabled = true;
+        pulseBetInput.disabled = false;
+        pulseResultEl.classList.remove('win', 'loss');
+        pulseResultEl.textContent = 'Enter a bet to play.';
+        pulseRoundTag.textContent = 'Idle';
+        pulsePotentialEl.textContent = 'Potential: $0.00';
+        updatePulseRiskMessaging();
+        if (initial) {
+          pulseStatusEl.textContent = 'Pulse core stable.';
+        } else {
+          setPulseStatus('Pulse core stable.');
+        }
+      }
+
+      function setPulseStatus(message) {
+        pulseStatusEl.textContent = message;
+      }
+
+      function getPulseExplosionPoint(bet) {
+        const roll = Math.random();
+        if (bet < 10) {
+          if (roll < 0.5) return randRange(1, 15);
+          if (roll < 0.8) return randRange(15, 40);
+          if (roll < 0.95) return randRange(40, 70);
+          return randRange(70, 100);
+        }
+        if (bet <= 50) {
+          if (roll < 0.6) return randRange(1, 10);
+          if (roll < 0.85) return randRange(10, 20);
+          if (roll < 0.97) return randRange(20, 35);
+          return randRange(35, 60);
+        }
+        if (roll < 0.75) return randRange(1, 6);
+        if (roll < 0.92) return randRange(6, 12);
+        if (roll < 0.985) return randRange(12, 18);
+        return randRange(18, 35);
       }
     </script>
   </body>
