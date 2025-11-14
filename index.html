@@ -56,7 +56,8 @@
         letter-spacing: 0.16em;
       }
 
-      .mode-switcher {
+      .mode-switcher,
+      .section-switcher {
         display: inline-flex;
         align-items: center;
         gap: 10px;
@@ -67,7 +68,8 @@
         box-shadow: inset 0 0 18px rgba(0, 255, 204, 0.08);
       }
 
-      .mode-button {
+      .mode-button,
+      .section-button {
         flex: 0 0 auto;
         padding: 10px 18px;
         border-radius: 999px;
@@ -81,15 +83,50 @@
         transition: background 0.2s ease, transform 0.18s ease, box-shadow 0.18s ease;
       }
 
-      .mode-button:hover {
+      .mode-button:hover,
+      .section-button:hover {
         transform: translateY(-1px);
         box-shadow: 0 10px 20px rgba(0, 255, 204, 0.2);
       }
 
-      .mode-button.active {
+      .mode-button.active,
+      .section-button.active {
         background: linear-gradient(135deg, #00ffc8, #00aaff);
         color: #002033;
         box-shadow: 0 16px 30px rgba(0, 255, 222, 0.28);
+      }
+
+      .section-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(22px, 4vw, 32px);
+      }
+
+      .section-panel {
+        display: none;
+        flex-direction: column;
+        gap: clamp(20px, 3vw, 30px);
+      }
+
+      .section-panel.active {
+        display: flex;
+      }
+
+      .section-heading-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .section-heading {
+        margin: 0;
+        font-size: clamp(20px, 3vw, 26px);
+        color: #6ef3ff;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
       }
 
       .mode-wrapper {
@@ -812,6 +849,269 @@
         color: #6effde;
       }
 
+      .card-games-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(20px, 3vw, 28px);
+      }
+
+      .card-panel {
+        display: none;
+        flex-direction: column;
+        gap: clamp(18px, 3vw, 24px);
+      }
+
+      .card-panel.active {
+        display: flex;
+      }
+
+      .card-intro {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.68);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+
+      .card-grid {
+        display: grid;
+        gap: clamp(14px, 2.5vw, 22px);
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .card-tile {
+        position: relative;
+        padding: clamp(18px, 2.6vw, 26px);
+        border-radius: 18px;
+        border: 1px solid rgba(110, 255, 236, 0.16);
+        background: rgba(6, 20, 32, 0.82);
+        color: rgba(234, 249, 255, 0.88);
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease, background 0.2s ease;
+        overflow: hidden;
+      }
+
+      .card-tile::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(circle at 30% 30%, rgba(110, 255, 236, 0.18), rgba(110, 255, 236, 0));
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+      }
+
+      .card-tile .card-name {
+        display: block;
+        font-size: clamp(14px, 2vw, 16px);
+        margin-bottom: 10px;
+      }
+
+      .card-tile .card-meta {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        color: rgba(255, 255, 255, 0.58);
+      }
+
+      .card-tile:hover:not(:disabled) {
+        transform: translateY(-4px);
+        border-color: rgba(110, 255, 236, 0.4);
+        box-shadow: 0 22px 40px rgba(0, 255, 222, 0.22);
+        background: rgba(12, 44, 60, 0.9);
+      }
+
+      .card-tile:hover:not(:disabled)::after {
+        opacity: 1;
+      }
+
+      .card-tile:disabled,
+      .card-tile.coming-soon {
+        cursor: not-allowed;
+        color: rgba(255, 255, 255, 0.35);
+        border-color: rgba(110, 255, 236, 0.08);
+        background: rgba(3, 12, 20, 0.6);
+      }
+
+      .card-game-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .card-game-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(18px, 2.4vw, 22px);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .ghost-button {
+        border-radius: 999px;
+        border: 1px solid rgba(110, 255, 236, 0.32);
+        background: rgba(6, 20, 32, 0.5);
+        color: rgba(234, 249, 255, 0.82);
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 0.18em;
+        padding: 10px 18px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+      }
+
+      .ghost-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 32px rgba(0, 255, 222, 0.22);
+        border-color: rgba(110, 255, 236, 0.55);
+      }
+
+      .binary-stage {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(18px, 3vw, 28px);
+        padding: clamp(24px, 4vw, 40px);
+      }
+
+      .binary-stage::after {
+        content: '';
+        position: absolute;
+        inset: 12%;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: inset 0 0 30px rgba(110, 255, 236, 0.12);
+        pointer-events: none;
+      }
+
+      .binary-stage.live::after {
+        box-shadow: inset 0 0 40px rgba(110, 255, 236, 0.28);
+      }
+
+      .binary-hand {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(12px, 2vw, 18px);
+        justify-content: center;
+        z-index: 2;
+      }
+
+      .binary-card {
+        position: relative;
+        width: clamp(96px, 15vw, 120px);
+        aspect-ratio: 3 / 4;
+        border-radius: 18px;
+        border: 1px solid rgba(110, 255, 236, 0.22);
+        background: linear-gradient(160deg, rgba(8, 24, 36, 0.95), rgba(2, 10, 20, 0.85));
+        color: rgba(234, 249, 255, 0.9);
+        padding: 16px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: stretch;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease;
+      }
+
+      .binary-card:not(.placeholder) {
+        cursor: pointer;
+      }
+
+      .binary-card:not(.placeholder):hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 44px rgba(0, 255, 222, 0.24);
+        border-color: rgba(110, 255, 236, 0.4);
+      }
+
+      .binary-card.active {
+        border-color: rgba(110, 255, 236, 0.65);
+        box-shadow: 0 0 18px rgba(110, 255, 236, 0.5);
+      }
+
+      .binary-card .binary-label {
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .binary-card .binary-value {
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(20px, 3vw, 26px);
+        text-align: center;
+        letter-spacing: 0.12em;
+        color: rgba(110, 255, 236, 0.95);
+      }
+
+      .binary-card .binary-bits {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: auto;
+      }
+
+      .binary-bit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1px solid rgba(110, 255, 236, 0.25);
+        background: rgba(4, 18, 26, 0.8);
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(16px, 2.8vw, 20px);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease;
+      }
+
+      .binary-card.active .binary-bit {
+        border-color: rgba(110, 255, 236, 0.55);
+      }
+
+      .binary-card.active .binary-bit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 28px rgba(0, 255, 222, 0.22);
+      }
+
+      .binary-bit.flipped {
+        border-color: rgba(255, 215, 120, 0.75);
+        box-shadow: 0 0 18px rgba(255, 215, 120, 0.4);
+        background: rgba(40, 26, 4, 0.85);
+      }
+
+      .binary-placeholder {
+        padding: 28px 24px;
+        border-radius: 18px;
+        border: 1px dashed rgba(110, 255, 236, 0.28);
+        background: rgba(2, 12, 22, 0.6);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .binary-target {
+        position: relative;
+        z-index: 2;
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: clamp(12px, 1.8vw, 14px);
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+      }
+
+      .card-controls h2 {
+        letter-spacing: 0.2em;
+      }
+
       @media (max-width: 960px) {
         .main-layout {
           grid-template-columns: 1fr;
@@ -846,18 +1146,25 @@
   <body>
     <div class="app-shell">
       <header class="top-bar">
-        <div class="title">Rocket Line</div>
-        <nav class="mode-switcher" aria-label="Game modes">
-          <button class="mode-button active" data-mode="rocket" type="button">
-            Rocket Mode
-          </button>
-          <button class="mode-button" data-mode="pulse" type="button">Pulse Cash</button>
-          <button class="mode-button" data-mode="mind" type="button">Mind Bet</button>
+        <div class="title" id="sectionTitle">NeonArc Casino · Rocket Line</div>
+        <nav class="section-switcher" aria-label="Game sections">
+          <button class="section-button active" data-section="skill" type="button">Skill Games</button>
+          <button class="section-button" data-section="card" type="button">Card Games</button>
         </nav>
         <div class="balance">Balance: $<span id="balance">1,000.00</span></div>
       </header>
-      <main class="mode-wrapper">
-        <section class="mode-panel active" id="rocketMode" aria-label="Rocket Mode">
+      <main class="section-wrapper">
+        <section class="section-panel active" id="skillGamesSection" aria-label="Skill Games">
+          <div class="section-heading-row">
+            <h2 class="section-heading">Skill Games</h2>
+            <nav class="mode-switcher" aria-label="Skill game modes">
+              <button class="mode-button active" data-mode="rocket" type="button">Rocket Mode</button>
+              <button class="mode-button" data-mode="pulse" type="button">Pulse Cash</button>
+              <button class="mode-button" data-mode="mind" type="button">Mind Bet</button>
+            </nav>
+          </div>
+          <div class="mode-wrapper">
+            <section class="mode-panel active" id="rocketMode" aria-label="Rocket Mode">
           <div class="main-layout">
             <div class="device-shell">
               <div class="stage idle" id="rocketStage">
@@ -987,8 +1294,77 @@
             </aside>
           </div>
         </section>
-      </main>
-    </div>
+      </div>
+    </section>
+    <section class="section-panel" id="cardGamesSection" aria-label="Card Games">
+      <div class="section-heading-row">
+        <h2 class="section-heading">Card Games</h2>
+      </div>
+      <div class="card-games-wrapper">
+        <div class="card-panel active" id="cardLobby">
+          <p class="card-intro">
+            Select a NeonArc card experience. Binary Poker is live; future decks are warming up.
+          </p>
+          <div class="card-grid">
+            <button class="card-tile card-game-tile" data-game="binaryPoker" type="button">
+              <span class="card-name">Binary Poker</span>
+              <span class="card-meta">Live · Flip a bit</span>
+            </button>
+            <button class="card-tile coming-soon" type="button" disabled>
+              <span class="card-name">StackJack</span>
+              <span class="card-meta">Coming Soon</span>
+            </button>
+            <button class="card-tile coming-soon" type="button" disabled>
+              <span class="card-name">Echo Hand</span>
+              <span class="card-meta">Coming Soon</span>
+            </button>
+            <button class="card-tile coming-soon" type="button" disabled>
+              <span class="card-name">Fuse</span>
+              <span class="card-meta">Coming Soon</span>
+            </button>
+            <button class="card-tile coming-soon" type="button" disabled>
+              <span class="card-name">Perception</span>
+              <span class="card-meta">Coming Soon</span>
+            </button>
+          </div>
+        </div>
+        <div class="card-panel" id="binaryPokerGame">
+          <div class="card-game-header">
+            <button class="ghost-button" id="cardBackBtn" type="button">← Back to Card Lobby</button>
+            <div class="card-game-title">Binary Poker</div>
+          </div>
+          <div class="main-layout card-layout">
+            <div class="device-shell">
+              <div class="stage idle binary-stage" id="binaryStage">
+                <div class="scroll-field"></div>
+                <div class="binary-hand" id="binaryHand">
+                  <div class="binary-placeholder">Deal a hand to reveal five binary cards.</div>
+                </div>
+                <div class="binary-target" id="binaryTarget">Target encoded. Flip a bit or lock in.</div>
+              </div>
+            </div>
+            <aside class="control-panel card-controls">
+              <h2>Binary Poker</h2>
+              <div>
+                <label for="binaryBet">Bet Amount</label>
+                <input type="number" id="binaryBet" min="1" step="1" value="20" />
+              </div>
+              <div class="panel-meta">
+                <span>Active Card: <strong id="binaryActiveLabel">--</strong></span>
+                <span>Flips Left: <strong id="binaryFlipInfo">1</strong></span>
+              </div>
+              <div class="button-row">
+                <button class="launch" id="binaryStart">Deal Hand</button>
+                <button class="cashout" id="binaryLock" disabled>Lock In</button>
+              </div>
+              <div class="status" id="binaryStatus">Set your wager and deal a binary hand.</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 
     <script>
       // ---------------- Configurable parameters ----------------
@@ -1041,16 +1417,51 @@
 
       let pathLength = 1;
       let activeMode = 'rocket';
+      let activeSection = 'skill';
+      let activeCardGame = null;
+
+      // ---------------- Binary Poker state ----------------
+      let binaryRunning = false;
+      let binaryBet = 0;
+      let binaryCards = [];
+      let binaryTarget = '';
+      let binaryActiveCard = 0;
+      let binaryFlipsLeft = 0;
+      let binaryLastFlip = null;
 
       // ---------------- Elements ----------------
-      const titleEl = document.querySelector('.title');
+      const baseTitle = 'NeonArc Casino';
+      const titleEl = document.getElementById('sectionTitle');
       const balanceEl = document.getElementById('balance');
+      const sectionButtons = document.querySelectorAll('.section-button');
       const modeButtons = document.querySelectorAll('.mode-button');
+      const sections = {
+        skill: document.getElementById('skillGamesSection'),
+        card: document.getElementById('cardGamesSection'),
+      };
       const panels = {
         rocket: document.getElementById('rocketMode'),
         pulse: document.getElementById('pulseMode'),
         mind: document.getElementById('mindMode'),
       };
+
+      const cardLobby = document.getElementById('cardLobby');
+      const cardTiles = document.querySelectorAll('.card-game-tile');
+      const cardBackBtn = document.getElementById('cardBackBtn');
+      const binaryGamePanel = document.getElementById('binaryPokerGame');
+      const cardPanels = {
+        binaryPoker: binaryGamePanel,
+      };
+
+      const binaryStage = document.getElementById('binaryStage');
+      const binaryHandEl = document.getElementById('binaryHand');
+      const binaryTargetEl = document.getElementById('binaryTarget');
+      const binaryBetInput = document.getElementById('binaryBet');
+      const binaryStartBtn = document.getElementById('binaryStart');
+      const binaryLockBtn = document.getElementById('binaryLock');
+      const binaryStatusEl = document.getElementById('binaryStatus');
+      const binaryActiveLabel = document.getElementById('binaryActiveLabel');
+      const binaryFlipInfo = document.getElementById('binaryFlipInfo');
 
       // Rocket elements
       const betInput = document.getElementById('bet');
@@ -1126,10 +1537,28 @@
         updatePulseRiskMessaging();
         resetMindGame(true);
         updateMindInsight();
+        resetBinaryPoker(true);
+        setTitle('Rocket Line');
 
+        sectionButtons.forEach((button) => {
+          button.addEventListener('click', () => switchSection(button.dataset.section));
+        });
         modeButtons.forEach((button) => {
           button.addEventListener('click', () => switchMode(button.dataset.mode));
         });
+        cardTiles.forEach((tile) => {
+          if (tile.disabled) return;
+          tile.addEventListener('click', () => {
+            if (activeSection !== 'card') {
+              switchSection('card');
+            }
+            enterCardGame(tile.dataset.game);
+          });
+        });
+        cardBackBtn.addEventListener('click', () => exitCardGame());
+        binaryStartBtn.addEventListener('click', startBinaryPoker);
+        binaryLockBtn.addEventListener('click', finishBinaryPoker);
+        binaryHandEl.addEventListener('click', handleBinaryHandClick);
         launchBtn.addEventListener('click', launchRocket);
         cashBtn.addEventListener('click', cashOut);
         betInput.addEventListener('input', updateRiskMessaging);
@@ -1181,13 +1610,13 @@
         modeButtons.forEach((button) => {
           button.classList.toggle('active', button.dataset.mode === mode);
         });
-        if (titleEl) {
-          const titles = {
-            rocket: 'Rocket Line',
-            pulse: 'Pulse Cash',
-            mind: 'Mind Bet',
-          };
-          titleEl.textContent = titles[mode] || 'Rocket Line';
+        const titles = {
+          rocket: 'Rocket Line',
+          pulse: 'Pulse Cash',
+          mind: 'Mind Bet',
+        };
+        if (activeSection === 'skill') {
+          setTitle(titles[mode] || 'Skill Games');
         }
       }
 
@@ -1219,6 +1648,322 @@
 
       function randRange(min, max) {
         return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+      }
+
+      function setTitle(suffix) {
+        if (!titleEl) return;
+        titleEl.textContent = suffix ? `${baseTitle} · ${suffix}` : baseTitle;
+      }
+
+      function switchSection(sectionName) {
+        if (!sections[sectionName]) return false;
+        if (sectionName === activeSection) return true;
+        if (sectionName === 'card') {
+          if (inFlight) {
+            setStatus('Finish the rocket round before changing sections.');
+            return false;
+          }
+          if (pulseRunning) {
+            setPulseStatus('Stabilize this pulse before changing sections.');
+            return false;
+          }
+          if (mindRunning) {
+            setMindStatus('Resolve the mind link before changing sections.');
+            return false;
+          }
+        } else if (sectionName === 'skill') {
+          if (binaryRunning) {
+            setBinaryStatus('Resolve your Binary Poker hand before leaving.');
+            return false;
+          }
+        }
+
+        activeSection = sectionName;
+        Object.entries(sections).forEach(([key, panel]) => {
+          panel.classList.toggle('active', key === sectionName);
+        });
+        sectionButtons.forEach((button) => {
+          button.classList.toggle('active', button.dataset.section === sectionName);
+        });
+
+        if (sectionName === 'skill') {
+          exitCardGame(false);
+          const titles = {
+            rocket: 'Rocket Line',
+            pulse: 'Pulse Cash',
+            mind: 'Mind Bet',
+          };
+          setTitle(titles[activeMode] || 'Skill Games');
+        } else if (sectionName === 'card') {
+          if (!activeCardGame) {
+            cardLobby.classList.add('active');
+            Object.values(cardPanels).forEach((panel) => panel.classList.remove('active'));
+          }
+          setTitle(activeCardGame === 'binaryPoker' ? 'Binary Poker' : 'Card Games Lobby');
+        }
+
+        return true;
+      }
+
+      function enterCardGame(gameName) {
+        if (!gameName) return;
+        if (activeSection !== 'card') {
+          const switched = switchSection('card');
+          if (!switched) return;
+        }
+        if (gameName === activeCardGame) return;
+        cardLobby.classList.remove('active');
+        Object.values(cardPanels).forEach((panel) => panel.classList.remove('active'));
+        const targetPanel = cardPanels[gameName];
+        if (targetPanel) {
+          targetPanel.classList.add('active');
+        }
+        activeCardGame = gameName;
+        if (gameName === 'binaryPoker') {
+          resetBinaryPoker(true);
+          setTitle('Binary Poker');
+        }
+      }
+
+      function exitCardGame(manual = true) {
+        if (binaryRunning) {
+          setBinaryStatus('Resolve your Binary Poker hand before leaving.');
+          return false;
+        }
+        Object.values(cardPanels).forEach((panel) => panel.classList.remove('active'));
+        cardLobby.classList.add('active');
+        activeCardGame = null;
+        resetBinaryPoker(!manual);
+        if (manual || activeSection === 'card') {
+          setTitle('Card Games Lobby');
+        }
+        return true;
+      }
+
+      function startBinaryPoker() {
+        if (binaryRunning) return;
+        const wager = Math.floor(Number(binaryBetInput.value));
+        if (!wager || wager <= 0) {
+          setBinaryStatus('Enter a valid bet to deal.');
+          return;
+        }
+        if (wager > balance) {
+          setBinaryStatus('Insufficient balance for that wager.');
+          return;
+        }
+
+        binaryBet = wager;
+        balance -= binaryBet;
+        updateBalance();
+
+        binaryRunning = true;
+        binaryFlipsLeft = 1;
+        binaryCards = Array.from({ length: 5 }, () => randomBinaryCard());
+        binaryTarget = randomBinaryCard();
+        binaryActiveCard = 0;
+        binaryLastFlip = null;
+
+        binaryStartBtn.disabled = true;
+        binaryLockBtn.disabled = false;
+        binaryBetInput.disabled = true;
+        binaryActiveLabel.textContent = '1';
+        binaryFlipInfo.textContent = binaryFlipsLeft.toString();
+        binaryTargetEl.textContent = 'Target encoded. Flip a bit or lock in.';
+        setBinaryStatus('Hand dealt. Flip one bit or lock in your best binary card.');
+        binaryStage.classList.add('live');
+        binaryStage.classList.remove('idle');
+        renderBinaryCards();
+      }
+
+      function handleBinaryHandClick(event) {
+        const bitEl = event.target.closest('.binary-bit');
+        if (bitEl) {
+          const cardIndex = Number(bitEl.dataset.card);
+          const bitIndex = Number(bitEl.dataset.bit);
+          if (!binaryRunning) return;
+          if (Number.isNaN(cardIndex) || Number.isNaN(bitIndex)) return;
+          if (cardIndex !== binaryActiveCard) {
+            setBinaryStatus('Select that card before flipping its bits.');
+            return;
+          }
+          flipBit(bitIndex);
+          return;
+        }
+
+        const cardEl = event.target.closest('.binary-card');
+        if (!cardEl || cardEl.classList.contains('placeholder')) return;
+        const cardIndex = Number(cardEl.dataset.card);
+        if (Number.isNaN(cardIndex)) return;
+        selectBinaryCard(cardIndex);
+      }
+
+      function selectBinaryCard(index) {
+        if (!binaryCards.length) return;
+        binaryActiveCard = Math.max(0, Math.min(index, binaryCards.length - 1));
+        binaryActiveLabel.textContent = `${binaryActiveCard + 1}`;
+        renderBinaryCards();
+        if (binaryRunning) {
+          const prompt =
+            binaryFlipsLeft > 0 ? 'You may flip one bit on this card.' : 'No flips remaining — lock in when ready.';
+          setBinaryStatus(`Card ${binaryActiveCard + 1} selected. ${prompt}`);
+        }
+      }
+
+      function renderBinaryCards() {
+        binaryHandEl.innerHTML = '';
+        if (!binaryCards.length) {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'binary-placeholder';
+          placeholder.textContent = 'Deal a hand to reveal five binary cards.';
+          binaryHandEl.appendChild(placeholder);
+          return;
+        }
+
+        binaryCards.forEach((bits, cardIndex) => {
+          const cardButton = document.createElement('button');
+          cardButton.type = 'button';
+          cardButton.className = 'binary-card';
+          cardButton.dataset.card = cardIndex.toString();
+          if (cardIndex === binaryActiveCard) {
+            cardButton.classList.add('active');
+          }
+
+          const label = document.createElement('div');
+          label.className = 'binary-label';
+          label.textContent = `Card ${cardIndex + 1}`;
+
+          const value = document.createElement('div');
+          value.className = 'binary-value';
+          value.textContent = parseInt(bits, 2).toString();
+
+          const bitGrid = document.createElement('div');
+          bitGrid.className = 'binary-bits';
+          bits.split('').forEach((bit, bitIndex) => {
+            const bitSpan = document.createElement('span');
+            bitSpan.className = 'binary-bit';
+            if (
+              binaryLastFlip &&
+              binaryLastFlip.card === cardIndex &&
+              binaryLastFlip.bit === bitIndex
+            ) {
+              bitSpan.classList.add('flipped');
+            }
+            bitSpan.dataset.card = cardIndex.toString();
+            bitSpan.dataset.bit = bitIndex.toString();
+            bitSpan.textContent = bit;
+            bitGrid.appendChild(bitSpan);
+          });
+
+          cardButton.appendChild(label);
+          cardButton.appendChild(value);
+          cardButton.appendChild(bitGrid);
+          binaryHandEl.appendChild(cardButton);
+        });
+      }
+
+      function flipBit(bitIndex) {
+        if (!binaryRunning) {
+          setBinaryStatus('Deal a hand before flipping bits.');
+          return;
+        }
+        if (binaryFlipsLeft <= 0) {
+          setBinaryStatus('No flips remaining this round.');
+          return;
+        }
+        if (bitIndex < 0 || bitIndex >= 4) return;
+
+        const bits = binaryCards[binaryActiveCard].split('');
+        bits[bitIndex] = bits[bitIndex] === '0' ? '1' : '0';
+        binaryCards[binaryActiveCard] = bits.join('');
+        binaryFlipsLeft -= 1;
+        binaryLastFlip = { card: binaryActiveCard, bit: bitIndex };
+        binaryFlipInfo.textContent = binaryFlipsLeft.toString();
+        setBinaryStatus('Bit flipped. Lock in when ready.');
+        renderBinaryCards();
+      }
+
+      function finishBinaryPoker() {
+        if (!binaryRunning) {
+          setBinaryStatus('Deal a hand before locking in.');
+          return;
+        }
+
+        binaryRunning = false;
+        binaryStartBtn.disabled = false;
+        binaryLockBtn.disabled = true;
+        binaryBetInput.disabled = false;
+        binaryStage.classList.remove('live');
+        binaryStage.classList.add('idle');
+
+        const playerBits = binaryCards[binaryActiveCard];
+        const targetBits = binaryTarget;
+        const distance = getHammingDistance(playerBits, targetBits);
+        const numericDiff = Math.abs(parseInt(playerBits, 2) - parseInt(targetBits, 2));
+        const payoutTable = {
+          0: 4,
+          1: 2.5,
+          2: 1.4,
+          3: 0,
+          4: 0,
+        };
+        const multiplierWin = payoutTable[distance] ?? 0;
+        let winnings = 0;
+
+        if (multiplierWin > 0) {
+          winnings = binaryBet * multiplierWin;
+          balance += winnings;
+          updateBalance();
+          setBinaryStatus(
+            `Distance ${distance}. Payout ${multiplierWin.toFixed(2)}x = $${winnings.toFixed(2)}.`
+          );
+        } else {
+          setBinaryStatus(`Distance ${distance}. Bet lost.`);
+        }
+
+        binaryTargetEl.textContent = `Target ${targetBits} · Your ${playerBits} · Δ${numericDiff} | Distance ${distance}`;
+        binaryFlipInfo.textContent = '0';
+        binaryBet = 0;
+      }
+
+      function resetBinaryPoker(initial) {
+        binaryRunning = false;
+        binaryBet = 0;
+        binaryCards = [];
+        binaryTarget = '';
+        binaryActiveCard = 0;
+        binaryFlipsLeft = 0;
+        binaryLastFlip = null;
+        binaryStartBtn.disabled = false;
+        binaryLockBtn.disabled = true;
+        binaryBetInput.disabled = false;
+        binaryActiveLabel.textContent = '--';
+        binaryFlipInfo.textContent = '1';
+        binaryStage.classList.remove('live');
+        binaryStage.classList.add('idle');
+        renderBinaryCards();
+        binaryTargetEl.textContent = 'Target encoded. Flip a bit or lock in.';
+        if (initial) {
+          setBinaryStatus('Set your wager and deal a binary hand.');
+        } else {
+          setBinaryStatus('Hand reset. Ready for a new deal.');
+        }
+      }
+
+      function setBinaryStatus(message) {
+        binaryStatusEl.textContent = message;
+      }
+
+      function randomBinaryCard() {
+        return Array.from({ length: 4 }, () => (Math.random() < 0.5 ? '0' : '1')).join('');
+      }
+
+      function getHammingDistance(a, b) {
+        const maxLength = Math.min(a.length, b.length);
+        let distance = 0;
+        for (let i = 0; i < maxLength; i += 1) {
+          if (a[i] !== b[i]) distance += 1;
+        }
+        return distance + Math.abs(a.length - b.length);
       }
 
       // ---------------- Rocket mode ----------------
