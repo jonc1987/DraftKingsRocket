@@ -338,6 +338,148 @@
         }
       }
 
+      .mind-stage {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(14px, 3vw, 22px);
+        padding: clamp(36px, 6vw, 72px);
+        overflow: hidden;
+      }
+
+      .mind-stage .scroll-field {
+        opacity: 0.25;
+      }
+
+      .mind-stage .mind-glitch {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(94, 255, 224, 0.08),
+            rgba(94, 255, 224, 0.08) 2px,
+            rgba(6, 18, 28, 0.05) 2px,
+            rgba(6, 18, 28, 0.05) 4px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(94, 255, 224, 0.04),
+            rgba(94, 255, 224, 0.04) 3px,
+            transparent 3px,
+            transparent 6px
+          );
+        opacity: 0;
+        mix-blend-mode: screen;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .mind-stage .mind-glitch,
+      .mind-stage .scroll-field {
+        z-index: 0;
+      }
+
+      .mind-stage .ai-face,
+      .mind-stage .mind-mood,
+      .mind-stage .multiplier-readout,
+      .mind-stage .potential-readout,
+      .mind-stage .history {
+        position: relative;
+        z-index: 2;
+      }
+
+      .mind-stage.near-flip .mind-glitch {
+        opacity: 0.35;
+        animation: mind-glitch 0.4s steps(2) infinite;
+      }
+
+      @keyframes mind-glitch {
+        0% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(1px, -1px);
+        }
+        100% {
+          transform: translate(-1px, 1px);
+        }
+      }
+
+      .ai-face {
+        position: relative;
+        width: clamp(160px, 28vw, 240px);
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 40px rgba(94, 255, 224, 0.35), inset 0 0 30px rgba(0, 0, 0, 0.65);
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(6, 10, 20, 0.9));
+        transition: box-shadow 0.4s ease, transform 0.4s ease;
+      }
+
+      .ai-face::after {
+        content: '';
+        position: absolute;
+        inset: 14%;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.6);
+      }
+
+      .ai-emotion {
+        font-size: clamp(42px, 6vw, 64px);
+        filter: drop-shadow(0 0 14px rgba(0, 0, 0, 0.45));
+        transition: transform 0.3s ease;
+      }
+
+      .mind-stage.mood-calm .ai-face {
+        background: radial-gradient(circle at 28% 28%, rgba(140, 228, 255, 0.5), rgba(0, 18, 40, 0.9));
+        box-shadow: 0 0 40px rgba(116, 208, 255, 0.45), inset 0 0 30px rgba(3, 15, 28, 0.9);
+      }
+
+      .mind-stage.mood-thinking .ai-face {
+        background: radial-gradient(circle at 30% 30%, rgba(255, 220, 120, 0.6), rgba(20, 12, 0, 0.9));
+        box-shadow: 0 0 40px rgba(255, 215, 130, 0.45), inset 0 0 30px rgba(20, 12, 0, 0.88);
+      }
+
+      .mind-stage.mood-worried .ai-face {
+        background: radial-gradient(circle at 32% 32%, rgba(255, 150, 84, 0.6), rgba(25, 6, 0, 0.9));
+        box-shadow: 0 0 40px rgba(255, 150, 84, 0.55), inset 0 0 30px rgba(25, 6, 0, 0.88);
+      }
+
+      .mind-stage.mood-erratic .ai-face {
+        background: radial-gradient(circle at 35% 35%, rgba(255, 90, 90, 0.65), rgba(28, 0, 0, 0.92));
+        box-shadow: 0 0 40px rgba(255, 90, 90, 0.62), inset 0 0 30px rgba(28, 0, 0, 0.92);
+      }
+
+      .mind-stage.mood-erratic .ai-emotion {
+        animation: mind-erratic 0.4s ease-in-out infinite alternate;
+      }
+
+      @keyframes mind-erratic {
+        from {
+          transform: translate(-2px, -2px) scale(1.02);
+        }
+        to {
+          transform: translate(2px, 2px) scale(0.98);
+        }
+      }
+
+      .mind-mood {
+        font-size: clamp(16px, 2.3vw, 20px);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .mind-stage .potential-readout {
+        top: 24px;
+        right: 24px;
+      }
+
       .history {
         position: absolute;
         left: 18px;
@@ -395,26 +537,30 @@
       }
 
       #multiplier,
-      #pulseMultiplier {
+      #pulseMultiplier,
+      #mindMultiplier {
         font-family: 'Orbitron', sans-serif;
         font-size: clamp(42px, 6vw, 64px);
         text-shadow: 0 0 18px rgba(90, 255, 221, 0.6);
       }
 
       #roundResult,
-      #pulseRoundResult {
+      #pulseRoundResult,
+      #mindRoundResult {
         font-size: clamp(16px, 2.5vw, 22px);
         color: rgba(255, 255, 255, 0.82);
       }
 
       #roundResult.win,
-      #pulseRoundResult.win {
+      #pulseRoundResult.win,
+      #mindRoundResult.win {
         color: #64ffd2;
         text-shadow: 0 0 16px rgba(100, 255, 210, 0.55);
       }
 
       #roundResult.loss,
-      #pulseRoundResult.loss {
+      #pulseRoundResult.loss,
+      #mindRoundResult.loss {
         color: #ff8a78;
         text-shadow: 0 0 12px rgba(255, 110, 110, 0.45);
       }
@@ -706,6 +852,7 @@
             Rocket Mode
           </button>
           <button class="mode-button" data-mode="pulse" type="button">Pulse Cash</button>
+          <button class="mode-button" data-mode="mind" type="button">Mind Bet</button>
         </nav>
         <div class="balance">Balance: $<span id="balance">1,000.00</span></div>
       </header>
@@ -802,6 +949,44 @@
             </aside>
           </div>
         </section>
+
+        <section class="mode-panel" id="mindMode" aria-label="Mind Bet Mode">
+          <div class="main-layout">
+            <div class="device-shell">
+              <div class="stage idle mind-stage" id="mindStage">
+                <div class="scroll-field"></div>
+                <div class="mind-glitch" id="mindGlitch"></div>
+                <div class="ai-face" id="aiFace">
+                  <div class="ai-emotion" id="aiEmotion">😌</div>
+                </div>
+                <div class="mind-mood" id="mindMood">AI calm and observant.</div>
+                <ul class="history" id="mindHistory"></ul>
+                <div class="potential-readout" id="mindPotential">Potential: $0.00</div>
+                <div class="multiplier-readout">
+                  <div id="mindMultiplier">1.00x</div>
+                  <div id="mindRoundResult">Sync a wager to begin.</div>
+                </div>
+              </div>
+            </div>
+            <aside class="control-panel">
+              <h2>Mind Console</h2>
+              <div>
+                <label for="mindBet">Bet Amount</label>
+                <input type="number" id="mindBet" min="1" step="1" value="25" />
+              </div>
+              <div class="panel-meta">
+                <span>Signal Read: <strong id="mindSignalTag">Calibrating</strong></span>
+                <span>Round: <strong id="mindRoundTag">Idle</strong></span>
+              </div>
+              <div class="button-row">
+                <button class="launch" id="mindStartBtn">Start Mind Bet</button>
+                <button class="cashout" id="mindCashBtn" disabled>Cash Out</button>
+              </div>
+              <div class="risk-copy" id="mindInsight"></div>
+              <div class="status" id="mindStatus">Interface standing by.</div>
+            </aside>
+          </div>
+        </section>
       </main>
     </div>
 
@@ -843,6 +1028,17 @@
       let pulseFrame = null;
       let pulseCashedOut = false;
 
+      // ---------------- Mind Bet state ----------------
+      let mindBet = 0;
+      let mindMultiplier = 1;
+      let mindThreshold = 0;
+      let mindRunning = false;
+      let mindCashedOut = false;
+      let mindFrame = null;
+      let mindMoodInterval = null;
+      let mindLastTick = 0;
+      let mindMoodScore = 0;
+
       let pathLength = 1;
       let activeMode = 'rocket';
 
@@ -853,6 +1049,7 @@
       const panels = {
         rocket: document.getElementById('rocketMode'),
         pulse: document.getElementById('pulseMode'),
+        mind: document.getElementById('mindMode'),
       };
 
       // Rocket elements
@@ -888,6 +1085,22 @@
       const pulseLine = document.getElementById('pulseLine');
       const pulseGlow = document.getElementById('pulseGlow');
 
+      // Mind elements
+      const mindBetInput = document.getElementById('mindBet');
+      const mindSignalTag = document.getElementById('mindSignalTag');
+      const mindRoundTag = document.getElementById('mindRoundTag');
+      const mindInsight = document.getElementById('mindInsight');
+      const mindStartBtn = document.getElementById('mindStartBtn');
+      const mindCashBtn = document.getElementById('mindCashBtn');
+      const mindStatusEl = document.getElementById('mindStatus');
+      const mindStage = document.getElementById('mindStage');
+      const mindMultiplierEl = document.getElementById('mindMultiplier');
+      const mindResultEl = document.getElementById('mindRoundResult');
+      const mindPotentialEl = document.getElementById('mindPotential');
+      const mindMoodLabel = document.getElementById('mindMood');
+      const mindEmotionEl = document.getElementById('aiEmotion');
+      const mindHistoryList = document.getElementById('mindHistory');
+
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
       } else {
@@ -911,6 +1124,8 @@
         roundTag.textContent = 'Idle';
         resetPulseGame(true);
         updatePulseRiskMessaging();
+        resetMindGame(true);
+        updateMindInsight();
 
         modeButtons.forEach((button) => {
           button.addEventListener('click', () => switchMode(button.dataset.mode));
@@ -921,6 +1136,9 @@
         pulseLaunchBtn.addEventListener('click', startPulseCash);
         pulseCashBtn.addEventListener('click', cashOutPulse);
         pulseBetInput.addEventListener('input', updatePulseRiskMessaging);
+        mindStartBtn.addEventListener('click', startMindBet);
+        mindCashBtn.addEventListener('click', cashOutMindBet);
+        mindBetInput.addEventListener('input', updateMindInsight);
       }
 
       // ---------------- Shared helpers ----------------
@@ -933,6 +1151,10 @@
 
       function switchMode(mode) {
         if (mode === activeMode) return;
+        if (mindRunning && mode !== 'mind') {
+          setMindStatus('Stay focused—cash out or ride the thought to the end.');
+          return;
+        }
         if (mode === 'pulse' && inFlight) {
           setStatus('Finish the rocket round before switching modes.');
           return;
@@ -940,6 +1162,16 @@
         if (mode === 'rocket' && pulseRunning) {
           setPulseStatus('Stabilize this pulse before changing modes.');
           return;
+        }
+        if (mode === 'mind') {
+          if (inFlight) {
+            setStatus('Finish the rocket round before linking with the mind.');
+            return;
+          }
+          if (pulseRunning) {
+            setPulseStatus('Calm the pulse before opening the mind link.');
+            return;
+          }
         }
 
         activeMode = mode;
@@ -950,7 +1182,12 @@
           button.classList.toggle('active', button.dataset.mode === mode);
         });
         if (titleEl) {
-          titleEl.textContent = mode === 'rocket' ? 'Rocket Line' : 'Pulse Cash';
+          const titles = {
+            rocket: 'Rocket Line',
+            pulse: 'Pulse Cash',
+            mind: 'Mind Bet',
+          };
+          titleEl.textContent = titles[mode] || 'Rocket Line';
         }
       }
 
@@ -961,7 +1198,7 @@
       }
 
       function populateHistory() {
-        const lists = [historyList, pulseHistoryList];
+        const lists = [historyList, pulseHistoryList, mindHistoryList];
         lists.forEach((list) => {
           if (!list) return;
           list.innerHTML = '';
@@ -1368,6 +1605,218 @@
         if (roll < 0.92) return randRange(6, 12);
         if (roll < 0.985) return randRange(12, 18);
         return randRange(18, 35);
+      }
+
+      // ---------------- Mind Bet mode ----------------
+      function updateMindInsight() {
+        const bet = Number(mindBetInput.value) || 0;
+        if (bet >= 75) {
+          mindSignalTag.textContent = 'Erratic';
+          mindInsight.textContent = 'Heavy stakes overload the AI focus. Expect sharp flips between 1x and 5x with rare surges beyond.';
+        } else if (bet >= 25) {
+          mindSignalTag.textContent = 'Wary';
+          mindInsight.textContent = 'Mid stakes agitate the interface. Multipliers commonly stall around 1x–20x before a mind shift.';
+        } else if (bet > 0) {
+          mindSignalTag.textContent = 'Aligned';
+          mindInsight.textContent = 'Light wagers keep the link composed. Long meditations up to 100x are possible if luck holds.';
+        } else {
+          mindSignalTag.textContent = '--';
+          mindInsight.textContent = '';
+        }
+      }
+
+      function startMindBet() {
+        if (mindRunning) return;
+        const bet = Math.floor(Number(mindBetInput.value));
+        if (!bet || bet <= 0) {
+          setMindStatus('Enter a valid bet to open the mind link.');
+          return;
+        }
+        if (bet > balance) {
+          setMindStatus('Insufficient balance for that wager.');
+          return;
+        }
+
+        mindBet = bet;
+        balance -= mindBet;
+        updateBalance();
+
+        mindMultiplier = 1;
+        mindThreshold = randRange(1, settings.maxMultiplier);
+        mindRunning = true;
+        mindCashedOut = false;
+        mindLastTick = performance.now();
+
+        mindStage.classList.remove('idle', 'exploded', 'near-flip');
+        mindStage.classList.add('live');
+        mindRoundTag.textContent = 'Live';
+        mindResultEl.classList.remove('win', 'loss');
+        mindResultEl.textContent = 'Link live — watch the intent.';
+        mindStartBtn.disabled = true;
+        mindCashBtn.disabled = false;
+        mindBetInput.disabled = true;
+        setMindStatus('Link open—trust the signals, but act fast.');
+        updateMindDisplays();
+        mindMoodScore = Math.floor(Math.random() * 101);
+        applyMindMood(mindMoodScore);
+
+        if (mindFrame) cancelAnimationFrame(mindFrame);
+        mindFrame = requestAnimationFrame(stepMindBet);
+        if (mindMoodInterval) clearInterval(mindMoodInterval);
+        mindMoodInterval = setInterval(updateMindMood, 1000);
+      }
+
+      function stepMindBet(timestamp) {
+        if (!mindRunning) return;
+        const delta = Math.max((timestamp - mindLastTick) / 1000, 0.016);
+        mindLastTick = timestamp;
+
+        const acceleration = 0.85 + mindMultiplier * 0.18;
+        mindMultiplier += acceleration * delta;
+        updateMindDisplays();
+
+        const ratio = mindThreshold ? mindMultiplier / mindThreshold : 0;
+        const hazardBase = Math.pow(Math.max(ratio, 0), 1.8) * 0.28;
+        const extendedRisk = Math.max(0, mindMultiplier - 20) * 0.0025;
+        const erraticBoost = mindMoodScore >= 90 ? 0.12 : mindMoodScore >= 70 ? 0.05 : 0;
+        const crashChance = Math.min(0.55, hazardBase + extendedRisk + erraticBoost);
+
+        mindStage.classList.toggle('near-flip', ratio >= 0.82 || mindMoodScore >= 90);
+
+        if (Math.random() < crashChance * delta) {
+          explodeMindBet();
+          return;
+        }
+
+        if (mindMultiplier >= mindThreshold) {
+          explodeMindBet();
+          return;
+        }
+
+        mindFrame = requestAnimationFrame(stepMindBet);
+      }
+
+      function updateMindDisplays() {
+        mindMultiplierEl.textContent = `${mindMultiplier.toFixed(2)}x`;
+        if (mindRunning) {
+          const potential = mindBet * mindMultiplier;
+          mindPotentialEl.textContent = `Potential: $${potential.toFixed(2)}`;
+        } else {
+          mindPotentialEl.textContent = 'Potential: $0.00';
+        }
+      }
+
+      function updateMindMood() {
+        if (!mindRunning) return;
+        mindMoodScore = Math.floor(Math.random() * 101);
+        applyMindMood(mindMoodScore);
+      }
+
+      function applyMindMood(score) {
+        const moodClasses = ['mood-calm', 'mood-thinking', 'mood-worried', 'mood-erratic'];
+        mindStage.classList.remove(...moodClasses);
+        let emoji = '😌';
+        let description = 'Calm — signals stable.';
+        let moodClass = 'mood-calm';
+        if (score > 90) {
+          emoji = '😵';
+          description = 'Erratic — change of mind imminent!';
+          moodClass = 'mood-erratic';
+        } else if (score > 70) {
+          emoji = '😟';
+          description = 'Worried — volatility rising.';
+          moodClass = 'mood-worried';
+        } else if (score > 40) {
+          emoji = '🤔';
+          description = 'Thinking — reading your move.';
+          moodClass = 'mood-thinking';
+        }
+        mindStage.classList.add(moodClass);
+        mindEmotionEl.textContent = emoji;
+        mindMoodLabel.textContent = description;
+      }
+
+      function cashOutMindBet() {
+        if (!mindRunning || mindCashedOut) return;
+        mindCashedOut = true;
+        const winnings = mindBet * mindMultiplier;
+        balance += winnings;
+        updateBalance();
+
+        setMindStatus(`Disconnected at ${mindMultiplier.toFixed(2)}x for $${winnings.toFixed(2)}.`);
+        mindResultEl.classList.remove('loss');
+        mindResultEl.classList.add('win');
+        mindResultEl.textContent = `Won = $${winnings.toFixed(2)}`;
+        mindRoundTag.textContent = 'Cashed Out';
+        recordHistory(true, mindMultiplier);
+        endMindBet();
+        scheduleMindReset();
+      }
+
+      function explodeMindBet() {
+        if (!mindRunning) return;
+        mindStage.classList.add('exploded');
+        const crashPoint = Math.min(mindMultiplier, mindThreshold);
+        setMindStatus(`Mind flipped at ${crashPoint.toFixed(2)}x. Bet lost.`);
+        mindResultEl.classList.remove('win');
+        mindResultEl.classList.add('loss');
+        mindResultEl.textContent = 'Mind changed — bet lost.';
+        mindRoundTag.textContent = 'Busted';
+        recordHistory(false, crashPoint);
+        endMindBet();
+        scheduleMindReset();
+      }
+
+      function endMindBet() {
+        if (mindFrame) {
+          cancelAnimationFrame(mindFrame);
+          mindFrame = null;
+        }
+        if (mindMoodInterval) {
+          clearInterval(mindMoodInterval);
+          mindMoodInterval = null;
+        }
+        mindRunning = false;
+        mindCashBtn.disabled = true;
+        mindStage.classList.remove('live', 'near-flip');
+        mindStage.classList.add('idle');
+        mindStage.classList.remove('mood-thinking', 'mood-worried', 'mood-erratic');
+        mindStage.classList.add('mood-calm');
+      }
+
+      function scheduleMindReset() {
+        setTimeout(() => resetMindGame(false), settings.resetDelay);
+      }
+
+      function resetMindGame(initial) {
+        endMindBet();
+        mindMultiplier = 1;
+        mindBet = 0;
+        mindThreshold = 0;
+        mindCashedOut = false;
+        mindMoodScore = 0;
+        mindStage.classList.remove('live', 'exploded', 'near-flip', 'mood-thinking', 'mood-worried', 'mood-erratic');
+        mindStage.classList.add('idle', 'mood-calm');
+        mindMultiplierEl.textContent = '1.00x';
+        mindPotentialEl.textContent = 'Potential: $0.00';
+        mindResultEl.classList.remove('win', 'loss');
+        mindResultEl.textContent = 'Sync a wager to begin.';
+        mindRoundTag.textContent = 'Idle';
+        mindMoodLabel.textContent = 'AI calm and observant.';
+        mindEmotionEl.textContent = '😌';
+        mindStartBtn.disabled = false;
+        mindCashBtn.disabled = true;
+        mindBetInput.disabled = false;
+        updateMindInsight();
+        if (initial) {
+          mindStatusEl.textContent = 'Interface standing by.';
+        } else {
+          setMindStatus('Interface standing by.');
+        }
+      }
+
+      function setMindStatus(message) {
+        mindStatusEl.textContent = message;
       }
     </script>
   </body>
